@@ -18,6 +18,11 @@ class MyService {
         });
     }
 
+    // For page block template
+    upsertRelation(relation): Promise<any> {
+        return this.papiClient.post('/addons/data/relations', relation);
+    }
+    
     async GetSQLData(orderID: number) : Promise<any>{
         let orderData : Transaction = await this.papiClient.transactions.get(orderID);      
         let operationData : any = await this.papiClient.get('/operations?where=ReceiverID=' + orderID);      
