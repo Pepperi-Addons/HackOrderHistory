@@ -102,7 +102,7 @@ class MyService {
             body["DateTimeStamp"] = {"Start": startDate.toISOString(), "End": endDate.toISOString()};
         }
         let cloudWatchLogs : Array<any> = await this.papiClient.post('/logs', body);        
-        return cloudWatchLogs;
+        return this.BuildResultFromCloudWatch(cloudWatchLogs);
     }
 
     GetTrasactionResult(orderData: Transaction){
@@ -161,6 +161,20 @@ class MyService {
             "Description": activityTypeDfinitionData.Description
         };
         return activityTypeDfinitionRes;
+    }
+
+    BuildResultFromCloudWatch(resultFromCloudWatch: Array<any>){
+        let result: Array<any> = [];
+        for(let i = 0; i < resultFromCloudWatch.length; i++){
+            result.push(resultFromCloudWatch);
+            if(result[i]['UserUUID'] != null && result[i]['UserUUID'] != ""){
+                if(result[i]['UserEmail'] == null){
+                    result[i]['UserEmail'] = "nofartest";
+                }
+                delete result[i].UserUUID;
+            }
+        }
+        return result;
     }
 }
 
