@@ -35,6 +35,7 @@ export class AddonComponent implements OnInit {
     headerUiControl: any = null;
 
     orderUUID = '';
+    currentTabIndex = 0;
 
     constructor(
         public addonService: AddonService,
@@ -172,7 +173,29 @@ export class AddonComponent implements OnInit {
     }
     
     private loadKibanaDetails(res) {
-        
+        if (res) {
+            this.kibanaActionsRows = [];
+
+            for (let actionIndex = 0; actionIndex < res.length; actionIndex++) {
+                const actionItem = res[actionIndex];
+                const updatedFields = actionItem['UpdatedFields'];
+                
+                if (updatedFields) {
+                    for (let index = 0; index < updatedFields.length; index++) {
+                        const updatedField = updatedFields[index];
+                        
+                        this.kibanaActionsRows.push({
+                            ActionType: actionItem['ActionType'],
+                            ActionUUID: actionItem['ActionUUID'],
+                            FieldID: updatedField['FieldID'],
+                            OldValue: updatedField['OldValue'],
+                            NewValue: updatedField['NewValue'],
+                        });
+                    }
+                }
+            }
+        }
+
         this.tabKibanaLoaded = true;
     }
     
@@ -236,6 +259,7 @@ export class AddonComponent implements OnInit {
     }
     
     tabClick(event) {
+        this.currentTabIndex = event.index;
         // Implement: Tab navigate function
     }
 
@@ -383,7 +407,41 @@ export class AddonComponent implements OnInit {
         }
     }
 
-    kibanaListDataSource: IPepGenericListDataSource = this.atdListDataSource;
+    kibanaActionsRows: any[];
+    kibanaListDataSource: IPepGenericListDataSource = {
+        init: async () => {
+            return {
+                dataView: {
+                    Context: {
+                        Name: '',
+                        Profile: { InternalID: 0 },
+                        ScreenSize: 'Landscape'
+                    },
+                    Type: 'Grid',
+                    Title: '',
+                    Fields: [
+                        this.getReadOnlyColumn('ActionType', 'TextBox'),
+                        this.getReadOnlyColumn('ActionUUID', 'TextBox'),
+                        this.getReadOnlyColumn('FieldID', 'TextBox'),
+                        this.getReadOnlyColumn('OldValue', 'TextBox'),
+                        this.getReadOnlyColumn('NewValue', 'TextBox'),
+                    ],
+                    Columns: [
+                        { Width: 10 },
+                        { Width: 30 },
+                        { Width: 20 },
+                        { Width: 20 },
+                        { Width: 20 }  
+                    ],
+                    FrozenColumnsCount: 0,
+                    MinimumColumnWidth: 0
+                }, 
+                items: this.kibanaActionsRows,
+                totalCount: this.kibanaActionsRows.length
+            }
+        }
+    }
+    
     cloudListDataSource: IPepGenericListDataSource = this.atdListDataSource;
 
     // actions: IPepGenericListActions = {

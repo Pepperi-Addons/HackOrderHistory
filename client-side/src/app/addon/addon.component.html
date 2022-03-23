@@ -70,25 +70,25 @@
                     </div>
                 </mat-tab>
 
-                <mat-tab *ngIf="tabKibanaLoaded">
+                <mat-tab>
                     <ng-template mat-tab-label>
                         <span class="body-md">
                             {{ 'Kibana' | translate }}
                         </span>
                     </ng-template>
-                    <div class="kibana-header">
+                    <!-- <div class="kibana-header">
                         <div class="kibana-sub-title">
                             <p class="body-md" [innerHTML]="'Kibana_SubTitle' | translate"></p>
                         </div>
-                    </div>
-                    <div class="kibana-content">
+                    </div> -->
+                    <div *ngIf="tabKibanaLoaded && currentTabIndex === 1" class="kibana-content">
                         <div class="kibana-component">
-                            <pep-generic-list [dataSource]="kibanaListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
+                            <pep-generic-list style="height: 100%;" [dataSource]="kibanaListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                         </div>
                     </div>
                 </mat-tab>
 
-                <mat-tab *ngIf="tabCloudLoaded">
+                <mat-tab>
                     <ng-template mat-tab-label>
                         <span class="body-md">
                             {{ 'Cloud' | translate }}
@@ -99,7 +99,7 @@
                             <p class="body-md" [innerHTML]="'Cloud_SubTitle' | translate"></p>
                         </div>
                     </div>
-                    <div class="cloud-content">
+                    <div *ngIf="tabCloudLoaded && currentTabIndex === 2" class="cloud-content">
                         <div class="cloud-component">
                             <pep-generic-list [dataSource]="cloudListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                         </div>

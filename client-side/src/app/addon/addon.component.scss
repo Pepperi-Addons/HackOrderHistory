@@ -30,6 +30,10 @@
     }
 
     .mat-tab-group {
+        
+        height: 100%;
+        display: grid;
+        grid-auto-rows: auto 1fr;
         overflow: auto;
 
         ::ng-deep.mat-tab-body-content {
@@ -94,6 +98,7 @@
     // Kibana tab
     // ------------------------------------------
     .kibana-content {
+        height: 100%;
         display: grid;
 
         .kibana-component {
