@@ -7,7 +7,6 @@
             </ng-container>
             <div header-end-content>
                 <!-- Add components you want at the right side -->
-                <pep-button *ngIf="hasErrorInCloud" value="AI fix problems" (buttonClick)="openFixDialog($event)"></pep-button>
             </div>
         </pep-top-bar>
     </ng-container>
@@ -105,6 +104,7 @@
                                 (valueChange)="onLevelsValueChanged($event)">
                             </pep-select>
                             <pep-button value="load data" styleType="strong" [disabled]="actionsUuidsValue.length === 0" (buttonClick)="onLoadCloudDataClicked($event)"></pep-button>
+                            <pep-button *ngIf="hasErrorInCloud" value="fix all problems (AI)" styleType="strong" (buttonClick)="openFixDialog($event)"></pep-button>
                         </div>
                         <div *ngIf="tabCloudLoaded" class="cloud-content">
                             <pep-generic-list [dataSource]="cloudListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>

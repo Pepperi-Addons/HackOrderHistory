@@ -98,7 +98,7 @@ export class AddonComponent implements OnInit {
             headerData.Fields.push({
                 ApiName: objectKey,
                 FieldType: 1,
-                FormattedValue: objectKey.indexOf('DateTime') >= 0 ? new Date(objectValue).toLocaleString() : objectValue,
+                FormattedValue: objectKey.indexOf('DateTime') >= 0 ? this.getDateValue(objectValue) : objectValue,
                 Visible: "true"
             });
 
@@ -110,8 +110,12 @@ export class AddonComponent implements OnInit {
         this.headerDataLoaded = true;
     }
 
-    private getBooleanValue(hidden) {
-        return hidden === true ? 'True' : 'False';
+    private getBooleanValue(value) {
+        return value === true ? 'True' : 'False';
+    }
+
+    private getDateValue(value) {
+        return new Date(value).toLocaleString();
     }
 
     private loadSqlDetails(res) {
@@ -202,8 +206,8 @@ export class AddonComponent implements OnInit {
                             ActionType: actionItem['ActionType'],
                             ActionUUID: actionItem['ActionUUID'],
                             FieldID: updatedField['FieldID'],
-                            OldValue: updatedField['OldValue'],
-                            NewValue: updatedField['NewValue'],
+                            OldValue: updatedField['FieldID'].indexOf('DateTime') >= 0 ? this.getDateValue(updatedField['OldValue']) : updatedField['OldValue'],
+                            NewValue: updatedField['FieldID'].indexOf('DateTime') >= 0 ? this.getDateValue(updatedField['NewValue']) : updatedField['NewValue'],
                         });
                     }
                 }
@@ -227,7 +231,7 @@ export class AddonComponent implements OnInit {
                 const cloudItem = res[index];
                 
                 this.cloudRows.push({
-                    DateTimeStamp: cloudItem['DateTimeStamp'],
+                    DateTimeStamp: this.getDateValue(cloudItem['DateTimeStamp']),
                     ActionUUID: cloudItem['ActionUUID'],
                     UserEmail: cloudItem['UserEmail'],
                     Level: cloudItem['Level'],
@@ -237,6 +241,7 @@ export class AddonComponent implements OnInit {
 
                 if (!this.hasErrorInCloud) {
                     this.hasErrorInCloud = cloudItem['Exception']?.length > 0;
+                    // TODO: remove this
                     this.hasErrorInCloud = true;
                 }
             }
@@ -256,6 +261,7 @@ export class AddonComponent implements OnInit {
     }
 
     ngOnInit() {
+        // this.openFixDialog();
     }
 
     onSearchChanged(event: IPepSearchClickEvent) {
@@ -310,8 +316,8 @@ export class AddonComponent implements OnInit {
     openFixDialog() {
         // Show limit error msg.
         const dialogData = new PepDialogData({
-            title: 'Info',
-            content: 'Just kidding, If you really want to fix the problem call Diogo - 052-44757XX',
+            title: 'Just kidding',
+            content: '<p>If you really want to fix the problem<br/><span class="bold title-lg">call Diogo - 052-44757XX<span><p>',
             // showHeader: false
         });
 
@@ -523,12 +529,12 @@ export class AddonComponent implements OnInit {
                         this.getReadOnlyColumn('Exception', 'TextBox'),
                     ],
                     Columns: [
-                        { Width: 5 },
+                        { Width: 15 },
                         { Width: 25 },
-                        { Width: 20 },
+                        { Width: 15 },
                         { Width: 5 },
-                        { Width: 25 },
-                        { Width: 20 }  
+                        { Width: 30 },
+                        { Width: 10 }  
                     ],
                     FrozenColumnsCount: 0,
                     MinimumColumnWidth: 0
