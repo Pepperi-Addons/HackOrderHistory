@@ -7,7 +7,7 @@
             </ng-container>
             <div header-end-content>
                 <!-- Add components you want at the right side -->
-                
+                <pep-button *ngIf="hasErrorInCloud" value="AI fix problems" (buttonClick)="openFixDialog($event)"></pep-button>
             </div>
         </pep-top-bar>
     </ng-container>
@@ -46,7 +46,7 @@
                                     <pep-generic-list [dataSource]="orderListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                                 </div>
                             </mat-expansion-panel> -->
-                            <mat-expansion-panel>
+                            <mat-expansion-panel [expanded]="true">
                                 <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
                                     <mat-panel-title class="ellipsis body-md">
                                         {{ 'Order_Items' | translate }}
@@ -56,7 +56,7 @@
                                     <pep-generic-list [dataSource]="orderItemsListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                                 </div>
                             </mat-expansion-panel>
-                            <mat-expansion-panel>
+                            <mat-expansion-panel [expanded]="true">
                                 <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
                                     <mat-panel-title class="ellipsis body-md">
                                         {{ 'Operations' | translate }}
@@ -94,19 +94,19 @@
                             {{ 'Cloud' | translate }}
                         </span>
                     </ng-template>
-                    <div *ngIf="tabKibanaLoaded && currentTabIndex === 2" class="cloud-header">
-                        <pep-select mandatory="true" label="Actions uuids" type="multi" [value]="actionsUuidsValue"
-                            [options]="actionsUuidsOptions"
-                            (valueChange)="onActionsUuidsChanged($event)">
-                        </pep-select>
-                        <pep-select label="Levels" type="multi" [value]="levelsValue"
-                            [options]="levelsOptions"
-                            (valueChange)="onLevelsValueChanged($event)">
-                        </pep-select>
-                        <pep-button value="load data" styleType="strong" [disabled]="actionsUuidsValue.length === 0" (buttonClick)="onLoadCloudDataClicked($event)"></pep-button>
-                    </div>
-                    <div *ngIf="tabCloudLoaded" class="cloud-content">
-                        <div class="cloud-component">
+                    <div class="cloud-container">
+                        <div *ngIf="tabKibanaLoaded && currentTabIndex === 2" class="cloud-header">
+                            <pep-select mandatory="true" label="Actions uuids" type="multi" [value]="actionsUuidsValue"
+                                [options]="actionsUuidsOptions"
+                                (valueChange)="onActionsUuidsChanged($event)">
+                            </pep-select>
+                            <pep-select label="Levels" type="multi" [value]="levelsValue"
+                                [options]="levelsOptions"
+                                (valueChange)="onLevelsValueChanged($event)">
+                            </pep-select>
+                            <pep-button value="load data" styleType="strong" [disabled]="actionsUuidsValue.length === 0" (buttonClick)="onLoadCloudDataClicked($event)"></pep-button>
+                        </div>
+                        <div *ngIf="tabCloudLoaded" class="cloud-content">
                             <pep-generic-list [dataSource]="cloudListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                         </div>
                     </div>

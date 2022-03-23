@@ -226,7 +226,8 @@ export class AddonComponent implements OnInit {
             for (let index = 0; index < res.length; index++) {
                 const cloudItem = res[index];
                 
-                this.kibanaActionsRows.push({
+                this.cloudRows.push({
+                    DateTimeStamp: cloudItem['DateTimeStamp'],
                     ActionUUID: cloudItem['ActionUUID'],
                     UserEmail: cloudItem['UserEmail'],
                     Level: cloudItem['Level'],
@@ -236,6 +237,7 @@ export class AddonComponent implements OnInit {
 
                 if (!this.hasErrorInCloud) {
                     this.hasErrorInCloud = cloudItem['Exception']?.length > 0;
+                    this.hasErrorInCloud = true;
                 }
             }
         }
@@ -254,7 +256,6 @@ export class AddonComponent implements OnInit {
     }
 
     ngOnInit() {
-        // this.openFixDialog();
     }
 
     onSearchChanged(event: IPepSearchClickEvent) {
@@ -310,7 +311,7 @@ export class AddonComponent implements OnInit {
         // Show limit error msg.
         const dialogData = new PepDialogData({
             title: 'Info',
-            content: 'Nice, now for fixing the problem please call Diogo - 052-44757XX',
+            content: 'Just kidding, If you really want to fix the problem call Diogo - 052-44757XX',
             // showHeader: false
         });
 
@@ -514,6 +515,7 @@ export class AddonComponent implements OnInit {
                     Type: 'Grid',
                     Title: '',
                     Fields: [
+                        this.getReadOnlyColumn('DateTimeStamp', 'TextBox'),
                         this.getReadOnlyColumn('ActionUUID', 'TextBox'),
                         this.getReadOnlyColumn('UserEmail', 'TextBox'),
                         this.getReadOnlyColumn('Level', 'TextBox'),
@@ -521,10 +523,11 @@ export class AddonComponent implements OnInit {
                         this.getReadOnlyColumn('Exception', 'TextBox'),
                     ],
                     Columns: [
-                        { Width: 10 },
-                        { Width: 30 },
+                        { Width: 5 },
+                        { Width: 25 },
                         { Width: 20 },
-                        { Width: 20 },
+                        { Width: 5 },
+                        { Width: 25 },
                         { Width: 20 }  
                     ],
                     FrozenColumnsCount: 0,

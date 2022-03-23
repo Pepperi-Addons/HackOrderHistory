@@ -135,20 +135,9 @@
         margin-bottom: 1rem;
     }
 
-    .cloud-header {
-        display: flex;
-        gap: 1rem;
-        align-items: flex-start;
-
-        pep-select {
-            width: 300px;
-        }
-
-        pep-button {
-            margin-top: variables.$form-field-title-height;
-        }
-    }
-
+    // ------------------------------------------
+    // SQL tab
+    // ------------------------------------------
     .sql-content {
         margin-top: -1rem;
 
@@ -157,9 +146,6 @@
         }
     }
 
-    // ------------------------------------------
-    // SQL tab
-    // ------------------------------------------
     .order-items-content,
     .operations-content {
         ::ng-deep.virtual-scroller {
@@ -182,15 +168,35 @@
     // ------------------------------------------
     // Cloud tab
     // ------------------------------------------
-    .cloud-content {
+    .cloud-container {
+        height: 100%;
         display: grid;
+        grid-template-rows: auto 1fr;
 
-        .cloud-sub-title {
-            margin-bottom: 1rem;
+        .cloud-header {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+    
+            pep-select {
+                width: 300px;
+            }
+    
+            pep-button {
+                margin-top: variables.$form-field-title-height;
+            }
         }
-
-        .cloud-component {
-            width: 100%;
+    
+        .cloud-content {
+            display: grid;
+    
+            .cloud-sub-title {
+                margin-bottom: 1rem;
+            }
+    
+            .cloud-component {
+                width: 100%;
+            }
         }
     }
 
