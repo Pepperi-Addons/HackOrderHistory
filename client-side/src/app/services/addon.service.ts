@@ -60,6 +60,6 @@ export class AddonService {
             Levels: levels,
         };
 
-        return this.httpService.postHttpCall(`${this.serverBaseURL}/get_cloud_data`, body);
+        return this.httpService.postHttpCall(`${this.serverBaseURL}/get_could_watch_data`, body);
     }
 }
