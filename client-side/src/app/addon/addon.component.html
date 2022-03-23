@@ -95,7 +95,7 @@
                         </span>
                     </ng-template>
                     <div *ngIf="tabKibanaLoaded && currentTabIndex === 2" class="cloud-header">
-                        <pep-select mandatory="true" label="Actions uuids" type="multi" [value]="actionsUuidValue"
+                        <pep-select mandatory="true" label="Actions uuids" type="multi" [value]="actionsUuidsValue"
                             [options]="actionsUuidsOptions"
                             (valueChange)="onActionsUuidsChanged($event)">
                         </pep-select>

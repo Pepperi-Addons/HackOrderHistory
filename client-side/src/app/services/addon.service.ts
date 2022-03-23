@@ -54,7 +54,7 @@ export class AddonService {
     }
 
     // Get the cloud data.
-    getCloudData(actionsData: any[], levels: string): Observable<boolean> {
+    getCloudData(actionsData: any[], levels: string[]): Observable<boolean> {
         const body = {
             ActionsData: actionsData,
             Levels: levels,

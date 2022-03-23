@@ -27,6 +27,7 @@ export class AddonComponent implements OnInit {
     tabSqlLoaded = false;
     tabKibanaLoaded = false;
     tabCloudLoaded = false;
+    hasErrorInCloud = false;
 
     orderUUID = '';
     currentTabIndex = 0;
@@ -56,6 +57,7 @@ export class AddonComponent implements OnInit {
         this.tabSqlLoaded = false;
         this.tabKibanaLoaded = false;
         this.tabCloudLoaded = false;
+        this.hasErrorInCloud = false;
 
         this.orderUUID = '';
         this.currentTabIndex = 0;
@@ -218,7 +220,6 @@ export class AddonComponent implements OnInit {
     }
     
     private loadCloudDetails(res) {
-        debugger;
         if (res) {
             this.cloudRows = [];
 
@@ -232,6 +233,10 @@ export class AddonComponent implements OnInit {
                     Message: cloudItem['Message'],
                     Exception: cloudItem['Exception'],
                 });
+
+                if (!this.hasErrorInCloud) {
+                    this.hasErrorInCloud = cloudItem['Exception']?.length > 0;
+                }
             }
         }
 
@@ -287,7 +292,7 @@ export class AddonComponent implements OnInit {
                 }
             });
 
-            this.addonService.getCloudData(actionsData, this.levelsValue).toPromise().then(res => {
+            this.addonService.getCloudData(actionsData, this.levelsValue.split(';')).toPromise().then(res => {
                 this.loadCloudDetails(res);
             });
         } else {
