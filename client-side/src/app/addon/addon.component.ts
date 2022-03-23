@@ -270,13 +270,15 @@ export class AddonComponent implements OnInit {
         // Search history for this order number.
         this.orderNumber = event.value;
         
-        this.addonService.getHeaderData(this.orderNumber).toPromise().then(res => {
-            this.loadHeaderDetails(res);
-        });
-
-        this.addonService.getSqlData(this.orderNumber).toPromise().then(res => {
-            this.loadSqlDetails(res);
-        });
+        if (this.orderNumber.length > 0) {
+            this.addonService.getHeaderData(this.orderNumber).toPromise().then(res => {
+                this.loadHeaderDetails(res);
+            });
+    
+            this.addonService.getSqlData(this.orderNumber).toPromise().then(res => {
+                this.loadSqlDetails(res);
+            });
+        }
     }
 
     onActionsUuidsChanged(keys: string) {
