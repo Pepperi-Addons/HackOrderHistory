@@ -5,6 +5,8 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { PepNgxLibModule, PepAddonService } from '@pepperi-addons/ngx-lib';
 import { PepTopBarModule } from '@pepperi-addons/ngx-lib/top-bar';
@@ -62,6 +64,8 @@ export const routes: Routes = [
         // PepSearchModule,
         PepTextboxModule,
         MatDialogModule,
+        MatTabsModule,
+        MatExpansionModule,
         PepGenericListModule,
         TranslateModule.forChild({
             loader: {

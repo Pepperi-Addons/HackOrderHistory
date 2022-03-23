@@ -1,6 +1,6 @@
 {
   "AddonUUID": "33139b93-6cb1-4cca-babb-21824931515d",
-  "AddonVersion": "0.0.0",
+  "AddonVersion": "0.0.2",
   "DebugPort": 4500,
   "WebappBaseUrl": "https://app.sandbox.pepperi.com",
   "DefaultEditor": "main",
@@ -16,7 +16,7 @@
     "Editors": [
       {
         "ParentPackageName": "Hackaton",
-        "PackageName": "Order History",
+        "PackageName": "OrderHistory",
         "Description": "Order history :)"
       }
     ],

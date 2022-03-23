@@ -1,0 +1,140 @@
+.order-history-main-area {
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr;
+
+    .order-history-main-details {
+        height: 100px;
+        border: 1px solid gray;
+    }
+
+    p {
+        padding: 0;
+        margin: 0;
+    }
+
+    .mat-tab-group {
+        overflow: auto;
+        
+        ::ng-deep.mat-tab-body-content {
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: unset;// !important;
+        }
+    }
+
+    // ------------------------------------------
+    // General (all tabs)
+    // ------------------------------------------
+    .sql-header,
+    .kibana-header,
+    .cloud-header,
+    .ipass-header,
+    .device-details-header,
+    .json-put-header {
+        margin-bottom: 1rem;
+    }
+
+    .sql-content {
+        margin-top: -1rem;
+
+        ::ng-deep.mat-expansion-panel-body {
+            padding-top: 0 !important;
+        }
+    }
+
+    // ------------------------------------------
+    // SQL tab
+    // ------------------------------------------
+    // .atd-content,
+    // .order-content,
+    // .order-items-content,
+    // .operations-content {
+    //     display: grid;
+        
+    //     .atd-sub-title,
+    //     .order-sub-title,
+    //     .order-items-sub-title,
+    //     .operations-sub-title-title {
+    //         margin-bottom: 1rem;
+    //     }
+
+    //     .atd-component,
+    //     .order-component,
+    //     .order-items-component,
+    //     .operations-component {
+    //         width: 100%;
+    //     }
+    // }
+
+    // ------------------------------------------
+    // Kibana tab
+    // ------------------------------------------
+    .kibana-content {
+        display: grid;
+
+        .kibana-component {
+            width: 100%;
+        }
+    }
+
+    // ------------------------------------------
+    // Cloud tab
+    // ------------------------------------------
+    .cloud-content {
+        display: grid;
+
+        .cloud-sub-title {
+            margin-bottom: 1rem;
+        }
+
+        .cloud-component {
+            width: 100%;
+        }
+    }
+
+    // ------------------------------------------
+    // IPass tab
+    // ------------------------------------------
+    .ipass-content {
+        display: grid;
+
+        .ipass-sub-title {
+            margin-bottom: 1rem;
+        }
+
+        .ipass-component {
+            width: 100%;
+        }
+    }
+
+    // ------------------------------------------
+    // Device details tab
+    // ------------------------------------------
+    .device-details-content {
+        display: grid;
+        
+        .device-details-sub-title {
+            margin-bottom: 1rem;
+        }
+
+        .device-details-component {
+            width: 100%;
+        }
+    }
+
+    // ------------------------------------------
+    // JSON put tab
+    // ------------------------------------------
+    .json-put-content {
+        display: grid;
+
+        .json-put-sub-title {
+            margin-bottom: 1rem;
+        }
+
+        .json-put-component {
+            width: 100%;
+        }
+    }
+}

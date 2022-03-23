@@ -1,6 +1,6 @@
 <pep-page-layout [addPadding]="false">
     <ng-container pep-top-area>
-        <pep-top-bar title="Manage a list of todo's.">
+        <pep-top-bar title="Order History">
             <div header-start-content>
                 <!-- Add components you want after the title -->
             </div>
@@ -11,10 +11,151 @@
     </ng-container>
 
     <ng-container pep-main-area>
-        <pep-generic-list title="You can create and edit this list here" [dataSource]="listDataSource"
-            [actions]="actions" [showTopBar]="true" [selectionType]="'multi'" [inline]="true">
-        </pep-generic-list>
+        <div class="order-history-main-area">
+            <div class="order-history-main-details">
+
+            </div>
+            <mat-tab-group (selectedTabChange)="tabClick($event)">
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <span class="body-md">{{ 'SQL_Title' | translate }}</span>
+                    </ng-template>
+                    <div class="sql-header">
+                    </div>
+                    <div class="sql-content">
+                        <mat-accordion [displayMode]="'flat'" [multi]="true" class="pep-accordion">
+                            <mat-expansion-panel [expanded]="true">
+                                <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
+                                    <mat-panel-title class="ellipsis body-md">
+                                        {{ 'ATD_Title' | translate }}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                               
+                                <pep-generic-list [dataSource]="atdListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
+                            </mat-expansion-panel>
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
+                                    <mat-panel-title class="ellipsis body-md">
+                                        {{ 'Order_Title' | translate }}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="expansion-content order-content">
+                                    <pep-generic-list [dataSource]="orderListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
+                                </div>
+                            </mat-expansion-panel>
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
+                                    <mat-panel-title class="ellipsis body-md">
+                                        {{ 'Order_Items_Title' | translate }}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="expansion-content order-items-content">
+                                    <pep-generic-list [dataSource]="orderItemsListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
+                                </div>
+                            </mat-expansion-panel>
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
+                                    <mat-panel-title class="ellipsis body-md">
+                                        {{ 'Operations_Title' | translate }}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="expansion-content operations-content">
+                                    <pep-generic-list [dataSource]="operationsListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
+                                </div>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </div>
+                </mat-tab>
+
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <span class="body-md">
+                            {{ 'Kibana_Title' | translate }}
+                        </span>
+                    </ng-template>
+                    <div class="kibana-header">
+                        <div class="kibana-sub-title">
+                            <p class="body-md" [innerHTML]="'Kibana_SubTitle' | translate"></p>
+                        </div>
+                    </div>
+                    <div class="kibana-content">
+                        <div class="kibana-component">
+                            <pep-generic-list [dataSource]="kibanaListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
+                        </div>
+                    </div>
+                </mat-tab>
+
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <span class="body-md">
+                            {{ 'Cloud_Title' | translate }}
+                        </span>
+                    </ng-template>
+                    <div class="cloud-header">
+                        <div class="cloud-sub-title">
+                            <p class="body-md" [innerHTML]="'Cloud_SubTitle' | translate"></p>
+                        </div>
+                    </div>
+                    <div class="cloud-content">
+                        <div class="cloud-component">
+                            <pep-generic-list [dataSource]="cloudListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
+                        </div>
+                    </div>
+                </mat-tab>
+
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <span class="body-md">
+                            {{ 'IPass_Title' | translate }}
+                        </span>
+                    </ng-template>
+                    <div class="ipass-header">
+                        <div class="ipass-sub-title">
+                            <p class="body-md" [innerHTML]="'IPass_SubTitle' | translate"></p>
+                        </div>
+                    </div>
+                    <div class="ipass-content">
+                        TODO:
+                    </div>
+                </mat-tab>
+
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <span class="body-md">
+                            {{ 'DeviceDetails_Title' | translate }}
+                        </span>
+                    </ng-template>
+                    <div class="device-details-header">
+                        <div class="device-details-sub-title">
+                            <p class="body-md" [innerHTML]="'DeviceDetails_SubTitle' | translate"></p>
+                        </div>
+                    </div>
+                    <div class="device-details-content">
+                        TODO:
+                    </div>
+                </mat-tab>
+
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <span class="body-md">
+                            {{ 'JsonPut_Title' | translate }}
+                        </span>
+                    </ng-template>
+                    <div class="json-put-header">
+                        <div class="json-put-sub-title">
+                            <p class="body-md" [innerHTML]="'JsonPut_SubTitle' | translate"></p>
+                        </div>
+                    </div>
+                    <div class="json-put-content">
+                        TODO:
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
     </ng-container>
 </pep-page-layout>
 
 <pep-size-detector></pep-size-detector>
+<!-- <pep-generic-list title="You can create and edit this list here" [dataSource]="listDataSource"
+    [actions]="actions" [showTopBar]="true" [selectionType]="'multi'" [inline]="true">
+</pep-generic-list> -->

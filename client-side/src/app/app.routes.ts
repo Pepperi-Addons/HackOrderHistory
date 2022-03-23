@@ -16,11 +16,11 @@ const routes: Routes = [
         path: `settings/:addon_uuid`,
         children: [
             {
-                path: 'todos',
+                path: 'OrderHistory',
                 component: AddonComponent,
             },
             {
-                path: 'todos/:todo_uuid',
+                path: 'OrderHistory/:todo_uuid',
                 component: TodoForm
             }
         ]

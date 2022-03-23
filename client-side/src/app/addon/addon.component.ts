@@ -6,6 +6,7 @@ import { AddonService } from "../services/addon.service";
 import { IPepGenericListDataSource, IPepGenericListActions } from "@pepperi-addons/ngx-composite-lib/generic-list";
 import { PepSelectionData } from '@pepperi-addons/ngx-lib/list';
 import { ActivatedRoute, Router } from "@angular/router";
+import { PepDialogData, PepDialogService } from "@pepperi-addons/ngx-lib/dialog";
 
 @Component({
     selector: 'addon-module',
@@ -18,13 +19,15 @@ export class AddonComponent implements OnInit {
     @Output() hostEvents: EventEmitter<any> = new EventEmitter<any>();
     
     screenSize: PepScreenSizeType;
+    expansionPanelHeaderHeight = '*';
 
     constructor(
         public addonService: AddonService,
         public router: Router,
         public route: ActivatedRoute,
         public layoutService: PepLayoutService,
-        public translate: TranslateService
+        public translate: TranslateService,
+        public dialogService: PepDialogService,
     ) {
         this.layoutService.onResize$.subscribe(size => {
             this.screenSize = size;
@@ -32,13 +35,25 @@ export class AddonComponent implements OnInit {
     }
 
     ngOnInit() {
+        // this.openFixDialog();
     }
 
-    openDialog() {
-        
+    openFixDialog() {
+        // Show limit error msg.
+        const dialogData = new PepDialogData({
+            title: 'Info',
+            content: 'Nice, now for fixing the problem please call Diogo - 052-44757XX',
+            // showHeader: false
+        });
+
+        this.dialogService.openDefaultDialog(dialogData);
     }
     
-    listDataSource: IPepGenericListDataSource = {
+    tabClick(event) {
+        // Implement: Tab navigate function
+    }
+
+    atdListDataSource: IPepGenericListDataSource = {
         init: async (state) => {
             return {
                 dataView: {
@@ -88,22 +103,27 @@ export class AddonComponent implements OnInit {
                 
             }
         }
-        
     }
 
-    actions: IPepGenericListActions = {
-        get: async (data: PepSelectionData) => {
-            if (data.rows.length) {
-                return [{
-                    title: this.translate.instant("Edit"),
-                    handler: async (objs) => {
-                        this.router.navigate([objs[0].Key], {
-                            relativeTo: this.route,
-                            queryParamsHandling: 'merge'
-                        });
-                    }
-                }]
-            } else return []
-        }
-    }
+    orderListDataSource: IPepGenericListDataSource = this.atdListDataSource;
+    orderItemsListDataSource: IPepGenericListDataSource = this.atdListDataSource;
+    operationsListDataSource: IPepGenericListDataSource = this.atdListDataSource;
+    kibanaListDataSource: IPepGenericListDataSource = this.atdListDataSource;
+    cloudListDataSource: IPepGenericListDataSource = this.atdListDataSource;
+
+    // actions: IPepGenericListActions = {
+    //     get: async (data: PepSelectionData) => {
+    //         if (data.rows.length) {
+    //             return [{
+    //                 title: this.translate.instant("Edit"),
+    //                 handler: async (objs) => {
+    //                     this.router.navigate([objs[0].Key], {
+    //                         relativeTo: this.route,
+    //                         queryParamsHandling: 'merge'
+    //                     });
+    //                 }
+    //             }]
+    //         } else return []
+    //     }
+    // }
 }
