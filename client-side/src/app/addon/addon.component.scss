@@ -1,3 +1,12 @@
+@use '~@pepperi-addons/ngx-lib/src/core/style/abstracts/mixins';
+@use '~@pepperi-addons/ngx-lib/src/core/style/abstracts/functions';
+
+.search-order-number {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
 .order-history-main-area {
     height: 100%;
     display: grid;
@@ -5,7 +14,14 @@
 
     .order-history-main-details {
         height: 100px;
-        border: 1px solid gray;
+        margin-bottom: 0.25rem;
+        @include mixins.pep-border(border-left, solid, true);
+        @include mixins.pep-border(border-right, solid, true);
+        @include mixins.pep-border(border-bottom, solid, true);
+
+        background: functions.get-pep-color(color-system-primary-invert, color-base);
+        box-shadow: functions.get-pep-shadow(shadow-sm, regular);
+
     }
 
     p {
@@ -15,7 +31,7 @@
 
     .mat-tab-group {
         overflow: auto;
-        
+
         ::ng-deep.mat-tab-body-content {
             padding: 0 !important;
             margin: 0 !important;

@@ -17,7 +17,7 @@ import { PepButtonModule } from '@pepperi-addons/ngx-lib/button';
 import { PepDialogModule } from '@pepperi-addons/ngx-lib/dialog';
 import { PepMenuModule } from '@pepperi-addons/ngx-lib/menu';
 // import { PepListModule } from '@pepperi-addons/ngx-lib/list';
-// import { PepSearchModule } from '@pepperi-addons/ngx-lib/search';
+import { PepSearchModule } from '@pepperi-addons/ngx-lib/search';
 
 import { PepGenericListModule } from '@pepperi-addons/ngx-composite-lib/generic-list';
 
@@ -61,7 +61,7 @@ export const routes: Routes = [
         PepButtonModule,
         PepDialogModule,
         // PepListModule,
-        // PepSearchModule,
+        PepSearchModule,
         PepTextboxModule,
         MatDialogModule,
         MatTabsModule,

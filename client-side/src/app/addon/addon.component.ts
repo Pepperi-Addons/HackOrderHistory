@@ -7,6 +7,7 @@ import { IPepGenericListDataSource, IPepGenericListActions } from "@pepperi-addo
 import { PepSelectionData } from '@pepperi-addons/ngx-lib/list';
 import { ActivatedRoute, Router } from "@angular/router";
 import { PepDialogData, PepDialogService } from "@pepperi-addons/ngx-lib/dialog";
+import { IPepSearchClickEvent } from "@pepperi-addons/ngx-lib/search";
 
 @Component({
     selector: 'addon-module',
@@ -20,6 +21,8 @@ export class AddonComponent implements OnInit {
     
     screenSize: PepScreenSizeType;
     expansionPanelHeaderHeight = '*';
+    orderNumber = '';
+    hasError = false;
 
     constructor(
         public addonService: AddonService,
@@ -36,6 +39,13 @@ export class AddonComponent implements OnInit {
 
     ngOnInit() {
         // this.openFixDialog();
+    }
+
+    onSearchChanged(event: IPepSearchClickEvent) {
+        this.hasError = false;
+        this.orderNumber = event.value;
+        
+        // TODO: Search history for this order number.
     }
 
     openFixDialog() {
