@@ -317,7 +317,7 @@ export class AddonComponent implements OnInit {
         // Show limit error msg.
         const dialogData = new PepDialogData({
             title: 'Just kidding',
-            content: '<p>If you really want to fix the problem<br/><span class="bold title-lg">call Diogo - 052-44757XX<span><p>',
+            content: '<p>If you really want to fix the problems<br/><span class="bold title-lg">call Diogo - 052-44757XX<span><p>',
             // showHeader: false
         });
 
