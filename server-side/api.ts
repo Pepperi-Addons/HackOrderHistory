@@ -19,3 +19,9 @@ export async function get_kibana_data(client: Client, request: Request){
     const res = await service.GetKibanaData(request.query["order_uuid"].toLowerCase());
     return res;
 }
+
+export async function get_could_watch_data(client: Client, request: Request){
+    const service = new MyService(client);
+    const res = await service.GetCloudWatchData(request.body["ActionsData"], request.body["Levels"]);
+    return res;
+}
