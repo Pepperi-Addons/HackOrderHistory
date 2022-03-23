@@ -13,12 +13,13 @@
     </ng-container>
 
     <ng-container pep-main-area>
-        <div *ngIf="orderNumber.length > 0" class="order-history-main-area">
+        <div class="order-history-main-area">
             <div class="order-history-main-details">
-                
+                <pep-form layoutType="card" [layout]="headerUiControl" [data]="headerData">
+                </pep-form>
             </div>
             <mat-tab-group (selectedTabChange)="tabClick($event)">
-                <mat-tab>
+                <mat-tab *ngIf="tabSqlLoaded">
                     <ng-template mat-tab-label>
                         <span class="body-md">{{ 'SQL_Title' | translate }}</span>
                     </ng-template>

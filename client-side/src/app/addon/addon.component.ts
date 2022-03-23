@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
-import { PepLayoutService, PepScreenSizeType } from '@pepperi-addons/ngx-lib';
+import { PepLayoutService, PepScreenSizeType, UIControl } from '@pepperi-addons/ngx-lib';
 import { TranslateService } from '@ngx-translate/core';
 
 import { AddonService } from "../services/addon.service";
@@ -8,6 +8,7 @@ import { PepSelectionData } from '@pepperi-addons/ngx-lib/list';
 import { ActivatedRoute, Router } from "@angular/router";
 import { PepDialogData, PepDialogService } from "@pepperi-addons/ngx-lib/dialog";
 import { IPepSearchClickEvent } from "@pepperi-addons/ngx-lib/search";
+// import { headerUiControl, headerData } from './hardcoded-data';
 
 @Component({
     selector: 'addon-module',
@@ -21,8 +22,15 @@ export class AddonComponent implements OnInit {
     
     screenSize: PepScreenSizeType;
     expansionPanelHeaderHeight = '*';
-    orderNumber = '';
+    orderNumber = '282788636';
     hasError = false;
+    headerDataLoaded = false;
+    tabSqlLoaded = false;
+    tabKibanaLoaded = false;
+    tabCloudLoaded = false;
+    
+    headerData: any = null;
+    headerUiControl: any = null;
 
     constructor(
         public addonService: AddonService,
@@ -37,15 +45,99 @@ export class AddonComponent implements OnInit {
         });
     }
 
+    private loadHeaderDetails(res) {
+        const columnsNumber = 3;
+        const headerUiControl = {
+            Columns: columnsNumber,
+            ControlFields: []
+        };
+        
+        const headerData = {
+            Fields: []
+        };
+
+        let index = 0;
+        Object.keys(res).forEach(objectKey => {
+            headerUiControl.ControlFields.push({
+                ApiName: objectKey,
+                // ColumnWidth: 100 / columnsNumber,
+                FieldType: 1,
+                Layout: {
+                    Height: 1,
+                    LineNumber: 0,
+                    Width: 1,
+                    X: index % columnsNumber,
+                    XAlignment: 1,
+                    Y: parseInt((index / columnsNumber).toString()),
+                    YAlignment: 3
+                },
+                Title: this.translate.instant(`HEADER_DETAILS.${objectKey}`) + ":"
+            });
+
+            const objectValue = res[objectKey];
+            headerData.Fields.push({
+                ApiName: objectKey,
+                FieldType: 1,
+                FormattedValue: objectKey.indexOf('DateTime') >= 0 ? new Date(objectValue).toLocaleString() : objectValue,
+                Visible: "true"
+            });
+
+            index++;
+        });
+
+        this.headerUiControl = headerUiControl;
+        this.headerData = headerData;
+        this.headerDataLoaded = true;
+    }
+
+    private loadSqlDetails(res) {
+        
+        // this.tabSqlLoaded = true;
+    }
+    
+    private loadKibanaDetails(res) {
+        
+        this.tabKibanaLoaded = true;
+    }
+    
+    private loadCloudDetails(res) {
+        
+        this.tabCloudLoaded = true;
+    }
+
+    private initFlags() {
+        this.hasError = false;
+        this.headerDataLoaded = false;
+        this.tabSqlLoaded = false;
+        this.tabKibanaLoaded = false;
+        this.tabCloudLoaded = false;
+    }
+
     ngOnInit() {
         // this.openFixDialog();
     }
 
     onSearchChanged(event: IPepSearchClickEvent) {
-        this.hasError = false;
+        this.initFlags();
+
+        // Search history for this order number.
         this.orderNumber = event.value;
         
-        // TODO: Search history for this order number.
+        this.addonService.getHeaderData(this.orderNumber).toPromise().then(res => {
+            this.loadHeaderDetails(res);
+        });
+
+        this.addonService.getSqlData(this.orderNumber).toPromise().then(res => {
+            this.loadSqlDetails(res);
+        });
+        
+        this.addonService.getKibanaData(this.orderNumber).toPromise().then(res => {
+            this.loadKibanaDetails(res);
+        });
+        
+        this.addonService.getCloudData(this.orderNumber).toPromise().then(res => {
+            this.loadCloudDetails(res);
+        });
     }
 
     openFixDialog() {

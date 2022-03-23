@@ -1,3 +1,13 @@
 {
-    "TODO_DETAILS": "Define the todo details"
+    "TODO_DETAILS": "Define the todo details",
+    "HEADER_DETAILS": {
+        "ATDName": "atd name",
+        "ActionDateTime": "action datetime",
+        "CatalogExternalID": "catalog external id",
+        "CreationDateTime": "creation datetime",
+        "ExternalID": "external id",
+        "ModificationDateTime": "modification datetime",
+        "Status": "status",
+        "UserEmail": "user email"
+    }
 }
