@@ -22,13 +22,13 @@ class MyService {
     upsertRelation(relation): Promise<any> {
         return this.papiClient.post('/addons/data/relations', relation);
     }
-    
+
     async GetSQLData(orderID: number) : Promise<any>{
         let orderData : Transaction = await this.papiClient.transactions.get(orderID);      
-        let operationData : any = await this.papiClient.get('/operations?where=ReceiverID=' + orderID);      
+        let operationData : Array<any> = await this.papiClient.get('/operations?where=ReceiverID=' + orderID);      
         let orderItemsData : TransactionLines[] = await this.papiClient.transactionLines.iter({where: "Transaction.WrntyID=" + orderID}).toArray();
         let activityTypeDfinitionData: ATDMetaData = await this.papiClient.get("/meta_data/Transactions/types/" + orderData.ActivityTypeID);
-        
+
         let result = {
             "Order": this.GetTrasactionResult(orderData),
             "OrderItems": this.GetTrasactionLineResult(orderItemsData),
@@ -55,6 +55,21 @@ class MyService {
             "ATDName": activityTypeDfinitionData.ExternalID,
             "CatalogExternalID": orderData.Catalog?.Data?.ExternalID
         };
+        return result;
+    }
+
+    async GetKibanaData(orderUUID: string) : Promise<any>{
+        let relativeUrl = `/addons/api/00000000-0000-0000-0000-00000da1a109/api/audit_data_logs?where=ObjectKey.keyword=${orderUUID}&order_by=CreationDateTime DESC`;
+        let auditLogs : Array<any> = await this.papiClient.get(relativeUrl);      
+        let result: Array<any> = [];
+        for (let i = 0; i < auditLogs.length; i++){
+            let log = {
+                "ActionUUID": auditLogs[i].ActionUUID,
+                "ActionType": auditLogs[i].ActionType,
+                "UpdatedFields": auditLogs[i].UpdatedFields
+            };
+            result.push(log);
+        }      
         return result;
     }
 
@@ -86,13 +101,18 @@ class MyService {
         return orderItemsRes;
     }
 
-    GetOperationResult(operationData: any){
-        let operationRes = {
-            "OperationType": this.OperationType.GetNameTypeByID(operationData.OperationType.toString()) ? this.OperationType.GetNameTypeByID(operationData.OperationType.toString()) : operationData.OperationType,
-            "IsDone": operationData.IsDone,
-            "NumOperationTries": operationData.NumOperationTries
-        };
-        return operationRes;
+    GetOperationResult(operationsData: Array<any>){
+        let operationsRes: Array<any> = [];
+        for(let i = 0; i < operationsData.length; i++){
+            let operationRes = {
+                "OperationType": this.OperationType.GetNameTypeByID(operationsData[i].OperationType.toString()) ? this.OperationType.GetNameTypeByID(operationsData[i].OperationType.toString()) : operationsData[i].OperationType,
+                "IsDone": operationsData[i].IsDone,
+                "NumOperationTries": operationsData[i].NumOperationTries
+            };
+            operationsRes.push(operationRes);
+        }
+        
+        return operationsRes;
     }
 
     GetATDResult(activityTypeDfinitionData: ATDMetaData){
