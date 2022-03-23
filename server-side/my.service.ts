@@ -166,7 +166,7 @@ class MyService {
     BuildResultFromCloudWatch(resultFromCloudWatch: Array<any>){
         let result: Array<any> = [];
         for(let i = 0; i < resultFromCloudWatch.length; i++){
-            result.push(resultFromCloudWatch);
+            result.push(resultFromCloudWatch[i]);
             if(result[i]['UserUUID'] != null && result[i]['UserUUID'] != ""){
                 if(result[i]['UserEmail'] == null){
                     result[i]['UserEmail'] = "nofartest";
