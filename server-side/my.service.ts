@@ -122,7 +122,10 @@ class MyService {
             let operationRes = {
                 "OperationType": this.OperationType.GetNameTypeByID(operationsData[i].OperationType.toString()) ? this.OperationType.GetNameTypeByID(operationsData[i].OperationType.toString()) : operationsData[i].OperationType,
                 "IsDone": operationsData[i].IsDone,
-                "NumOperationTries": operationsData[i].NumOperationTries
+                "NumOperationTries": operationsData[i].NumOperationTries,
+                "CreationDate": operationsData[i].CreationDate,
+                "ModificationDate": operationsData[i].ModificationDate,
+                "OperationStartDate": operationsData[i].OperationStartDate
             };
             operationsRes.push(operationRes);
         }
