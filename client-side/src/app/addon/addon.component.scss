@@ -62,6 +62,13 @@
     // ------------------------------------------
     // SQL tab
     // ------------------------------------------
+    .order-items-content,
+    .operations-content {
+        ::ng-deep.virtual-scroller {
+            height: 8rem;
+        }
+    }
+
     // .atd-content,
     // .order-content,
     // .order-items-content,

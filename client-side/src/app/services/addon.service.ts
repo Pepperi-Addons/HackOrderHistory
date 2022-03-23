@@ -49,8 +49,8 @@ export class AddonService {
     }
 
     // Get the kibana data.
-    getKibanaData(orderNumber: string): Observable<boolean> {
-        return this.httpService.getHttpCall(`${this.serverBaseURL}/get_kibana_data?order_id=${orderNumber}`);
+    getKibanaData(orderUUID: string): Observable<boolean> {
+        return this.httpService.getHttpCall(`${this.serverBaseURL}/get_kibana_data?order_uuid=${orderUUID}`);
     }
 
     // Get the cloud data.

@@ -117,6 +117,11 @@ export class AddonComponent implements OnInit {
             if (orderData) {
                 this.orderUUID = orderData['UUID'];
 
+                // After getting the order UUID from the res load data from Kibana.
+                this.addonService.getKibanaData(this.orderUUID).toPromise().then(res => {
+                    this.loadKibanaDetails(res);
+                });
+
                 // this.orderRows = [{
                 //     Key: 'order1',
                 //     ActivityTypeID: orderData['ActivityTypeID'],
@@ -149,11 +154,16 @@ export class AddonComponent implements OnInit {
             const operationsData = res['Operation'];
     
             if (operationsData) {
-                this.operationsRows = [{
-                    OperationType: operationsData['OperationType'],
-                    NumOperationTries: operationsData['NumOperationTries'],
-                    IsDone: this.getBooleanValue(operationsData['IsDone']),
-                }]
+                this.operationsRows = [];
+
+                for (let index = 0; index < operationsData.length; index++) {
+                    const operationItem = operationsData[index];
+                    this.operationsRows.push({
+                        OperationType: operationItem['OperationType'],
+                        NumOperationTries: operationItem['NumOperationTries'],
+                        IsDone: this.getBooleanValue(operationItem['IsDone']),
+                    });
+                }
             }
         }
 
@@ -208,9 +218,6 @@ export class AddonComponent implements OnInit {
             this.loadSqlDetails(res);
         });
         
-        // this.addonService.getKibanaData(this.orderNumber).toPromise().then(res => {
-        //     this.loadKibanaDetails(res);
-        // });
         
         // this.addonService.getCloudData(this.orderNumber).toPromise().then(res => {
         //     this.loadCloudDetails(res);
