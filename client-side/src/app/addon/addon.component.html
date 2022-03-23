@@ -14,14 +14,14 @@
 
     <ng-container pep-main-area>
         <div class="order-history-main-area">
-            <div class="order-history-main-details">
+            <div  *ngIf="headerDataLoaded" class="order-history-main-details">
                 <pep-form layoutType="card" [layout]="headerUiControl" [data]="headerData">
                 </pep-form>
             </div>
-            <mat-tab-group (selectedTabChange)="tabClick($event)">
+            <mat-tab-group *ngIf="tabsLoaded" (selectedTabChange)="tabClick($event)">
                 <mat-tab *ngIf="tabSqlLoaded">
                     <ng-template mat-tab-label>
-                        <span class="body-md">{{ 'SQL_Title' | translate }}</span>
+                        <span class="body-md">{{ 'SQL' | translate }}</span>
                     </ng-template>
                     <div class="sql-header">
                     </div>
@@ -30,26 +30,26 @@
                             <mat-expansion-panel [expanded]="true">
                                 <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
                                     <mat-panel-title class="ellipsis body-md">
-                                        {{ 'ATD_Title' | translate }}
+                                        {{ 'ATD' | translate }}
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
                                
                                 <pep-generic-list [dataSource]="atdListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                             </mat-expansion-panel>
-                            <mat-expansion-panel>
+                            <!-- <mat-expansion-panel>
                                 <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
                                     <mat-panel-title class="ellipsis body-md">
-                                        {{ 'Order_Title' | translate }}
+                                        {{ 'Order' | translate }}
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
                                 <div class="expansion-content order-content">
                                     <pep-generic-list [dataSource]="orderListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                                 </div>
-                            </mat-expansion-panel>
+                            </mat-expansion-panel> -->
                             <mat-expansion-panel>
                                 <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
                                     <mat-panel-title class="ellipsis body-md">
-                                        {{ 'Order_Items_Title' | translate }}
+                                        {{ 'Order_Items' | translate }}
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
                                 <div class="expansion-content order-items-content">
@@ -59,7 +59,7 @@
                             <mat-expansion-panel>
                                 <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
                                     <mat-panel-title class="ellipsis body-md">
-                                        {{ 'Operations_Title' | translate }}
+                                        {{ 'Operations' | translate }}
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
                                 <div class="expansion-content operations-content">
@@ -70,10 +70,10 @@
                     </div>
                 </mat-tab>
 
-                <mat-tab>
+                <mat-tab *ngIf="tabKibanaLoaded">
                     <ng-template mat-tab-label>
                         <span class="body-md">
-                            {{ 'Kibana_Title' | translate }}
+                            {{ 'Kibana' | translate }}
                         </span>
                     </ng-template>
                     <div class="kibana-header">
@@ -88,10 +88,10 @@
                     </div>
                 </mat-tab>
 
-                <mat-tab>
+                <mat-tab *ngIf="tabCloudLoaded">
                     <ng-template mat-tab-label>
                         <span class="body-md">
-                            {{ 'Cloud_Title' | translate }}
+                            {{ 'Cloud' | translate }}
                         </span>
                     </ng-template>
                     <div class="cloud-header">
@@ -109,13 +109,13 @@
                 <mat-tab>
                     <ng-template mat-tab-label>
                         <span class="body-md">
-                            {{ 'IPass_Title' | translate }}
+                            {{ 'IPass' | translate }}
                         </span>
                     </ng-template>
                     <div class="ipass-header">
-                        <div class="ipass-sub-title">
+                        <!-- <div class="ipass-sub-title">
                             <p class="body-md" [innerHTML]="'IPass_SubTitle' | translate"></p>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="ipass-content">
                         TODO:
@@ -125,13 +125,13 @@
                 <mat-tab>
                     <ng-template mat-tab-label>
                         <span class="body-md">
-                            {{ 'DeviceDetails_Title' | translate }}
+                            {{ 'DeviceDetails' | translate }}
                         </span>
                     </ng-template>
                     <div class="device-details-header">
-                        <div class="device-details-sub-title">
+                        <!-- <div class="device-details-sub-title">
                             <p class="body-md" [innerHTML]="'DeviceDetails_SubTitle' | translate"></p>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="device-details-content">
                         TODO:
@@ -141,13 +141,13 @@
                 <mat-tab>
                     <ng-template mat-tab-label>
                         <span class="body-md">
-                            {{ 'JsonPut_Title' | translate }}
+                            {{ 'JsonPut' | translate }}
                         </span>
                     </ng-template>
                     <div class="json-put-header">
-                        <div class="json-put-sub-title">
+                        <!-- <div class="json-put-sub-title">
                             <p class="body-md" [innerHTML]="'JsonPut_SubTitle' | translate"></p>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="json-put-content">
                         TODO:

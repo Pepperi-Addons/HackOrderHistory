@@ -8,6 +8,7 @@ import { PepSelectionData } from '@pepperi-addons/ngx-lib/list';
 import { ActivatedRoute, Router } from "@angular/router";
 import { PepDialogData, PepDialogService } from "@pepperi-addons/ngx-lib/dialog";
 import { IPepSearchClickEvent } from "@pepperi-addons/ngx-lib/search";
+import { DataViewFieldType } from "@pepperi-addons/papi-sdk";
 // import { headerUiControl, headerData } from './hardcoded-data';
 
 @Component({
@@ -22,15 +23,18 @@ export class AddonComponent implements OnInit {
     
     screenSize: PepScreenSizeType;
     expansionPanelHeaderHeight = '*';
-    orderNumber = '282788636';
+    orderNumber = '284220163'; //'282788636';
     hasError = false;
     headerDataLoaded = false;
+    tabsLoaded = false;
     tabSqlLoaded = false;
     tabKibanaLoaded = false;
     tabCloudLoaded = false;
     
     headerData: any = null;
     headerUiControl: any = null;
+
+    orderUUID = '';
 
     constructor(
         public addonService: AddonService,
@@ -90,9 +94,71 @@ export class AddonComponent implements OnInit {
         this.headerDataLoaded = true;
     }
 
+    private getBooleanValue(hidden) {
+        return hidden === true ? 'True' : 'False';
+    }
+
     private loadSqlDetails(res) {
-        
-        // this.tabSqlLoaded = true;
+        if (res) {
+            const atdData = res['ATD'];
+    
+            if (atdData) {
+                this.atdRows = [{
+                    Key: 'atd1',
+                    ExternalID: atdData['ExternalID'],
+                    Description: atdData['Description'],
+                    CreationDateTime: atdData['CreationDateTime'],
+                    ModificationDateTime: atdData['ModificationDateTime'],
+                    Hidden: this.getBooleanValue(atdData['Hidden']),
+                }]
+            }
+            
+            const orderData = res['Order'];
+            if (orderData) {
+                this.orderUUID = orderData['UUID'];
+
+                // this.orderRows = [{
+                //     Key: 'order1',
+                //     ActivityTypeID: orderData['ActivityTypeID'],
+                //     UUID: orderData['UUID'],
+                //     Hidden: orderData['Hidden'],
+                    
+                // }]
+            }
+            
+            const orderItemsData = res['OrderItems'];
+            if (orderItemsData) {
+                this.orderItemsRows = [];
+
+                for (let index = 0; index < orderItemsData.length; index++) {
+                    const orderItem = orderItemsData[index];
+                    this.orderItemsRows.push({
+                        InternalID: orderItem['InternalID'],
+                        ExternalID: orderItem['Item']['Data']['ExternalID'],
+                        UnitDiscountPercentage: orderItem['UnitDiscountPercentage'],
+                        UnitPrice: orderItem['UnitPrice'],
+                        UnitPriceAfterDiscount: orderItem['UnitPriceAfterDiscount'],
+                        UnitsQuantity: orderItem['UnitsQuantity'],
+                        CreationDateTime: orderItem['CreationDateTime'],
+                        ModificationDateTime: orderItem['ModificationDateTime'],
+                        Hidden: this.getBooleanValue(orderItem['Hidden']),
+                    });
+                }
+            }
+
+            const operationsData = res['Operation'];
+    
+            if (operationsData) {
+                this.operationsRows = [{
+                    OperationType: operationsData['OperationType'],
+                    NumOperationTries: operationsData['NumOperationTries'],
+                    IsDone: this.getBooleanValue(operationsData['IsDone']),
+                }]
+            }
+        }
+
+        this.tabsLoaded = true;
+        this.tabSqlLoaded = true;
     }
     
     private loadKibanaDetails(res) {
@@ -105,9 +171,20 @@ export class AddonComponent implements OnInit {
         this.tabCloudLoaded = true;
     }
 
+    private getReadOnlyColumn(columnId: string, type: DataViewFieldType): any {
+        return {
+            FieldID: columnId,
+            Type: type,
+            Title: columnId,
+            Mandatory: false,
+            ReadOnly: true
+        }
+    }
+
     private initFlags() {
         this.hasError = false;
         this.headerDataLoaded = false;
+        this.tabsLoaded = false;
         this.tabSqlLoaded = false;
         this.tabKibanaLoaded = false;
         this.tabCloudLoaded = false;
@@ -131,13 +208,13 @@ export class AddonComponent implements OnInit {
             this.loadSqlDetails(res);
         });
         
-        this.addonService.getKibanaData(this.orderNumber).toPromise().then(res => {
-            this.loadKibanaDetails(res);
-        });
+        // this.addonService.getKibanaData(this.orderNumber).toPromise().then(res => {
+        //     this.loadKibanaDetails(res);
+        // });
         
-        this.addonService.getCloudData(this.orderNumber).toPromise().then(res => {
-            this.loadCloudDetails(res);
-        });
+        // this.addonService.getCloudData(this.orderNumber).toPromise().then(res => {
+        //     this.loadCloudDetails(res);
+        // });
     }
 
     openFixDialog() {
@@ -155,61 +232,150 @@ export class AddonComponent implements OnInit {
         // Implement: Tab navigate function
     }
 
+    atdRows: any[];
     atdListDataSource: IPepGenericListDataSource = {
-        init: async (state) => {
+        init: async () => {
             return {
                 dataView: {
                     Context: {
                         Name: '',
                         Profile: { InternalID: 0 },
                         ScreenSize: 'Landscape'
-                      },
-                      Type: 'Grid',
-                      Title: '',
-                      Fields: [
-                        {
-                            FieldID: 'Field1',
-                            Type: 'TextBox',
-                            Title: 'Field1',
-                            Mandatory: false,
-                            ReadOnly: true
-                        },
-                        {
-                            FieldID: 'Field2',
-                            Type: 'Boolean',
-                            Title: 'Field2',
-                            Mandatory: false,
-                            ReadOnly: true
-                        }
-                      ],
-                      Columns: [
-                        {
-                          Width: 25
-                        },
-                        {
-                          Width: 25
-                        }
-                      ],
-                      FrozenColumnsCount: 0,
-                      MinimumColumnWidth: 0
-                    }, items: [{
-                        Key: 'key1',
-                        Field1: 'Hello',
-                        Field2: true
                     },
-                    {
-                        Key: 'key1',
-                        Field1: 'World',
-                        Field2: false
-                    }], totalCount: 2
-                
+                    Type: 'Grid',
+                    Title: '',
+                    Fields: [
+                        this.getReadOnlyColumn('ExternalID', 'TextBox'),
+                        this.getReadOnlyColumn('Description', 'TextBox'),
+                        this.getReadOnlyColumn('CreationDateTime', 'DateAndTime'),
+                        this.getReadOnlyColumn('ModificationDateTime', 'DateAndTime'),
+                        this.getReadOnlyColumn('Hidden', 'TextBox'),
+                    ],
+                    Columns: [
+                        { Width: 15 },
+                        { Width: 30 },
+                        { Width: 15 },
+                        { Width: 20 },
+                        { Width: 20 }  
+                    ],
+                    FrozenColumnsCount: 0,
+                    MinimumColumnWidth: 0
+                }, 
+                items: this.atdRows,
+                totalCount: this.atdRows.length
             }
         }
     }
 
-    orderListDataSource: IPepGenericListDataSource = this.atdListDataSource;
-    orderItemsListDataSource: IPepGenericListDataSource = this.atdListDataSource;
-    operationsListDataSource: IPepGenericListDataSource = this.atdListDataSource;
+    // orderRows: any[];
+    // orderListDataSource: IPepGenericListDataSource = {
+    //     init: async () => {
+    //         return {
+    //             dataView: {
+    //                 Context: {
+    //                     Name: '',
+    //                     Profile: { InternalID: 0 },
+    //                     ScreenSize: 'Landscape'
+    //                 },
+    //                 Type: 'Grid',
+    //                 Title: '',
+    //                 Fields: [
+    //                     this.getReadOnlyColumn('ActivityTypeID', 'TextBox'),
+    //                     this.getReadOnlyColumn('Description', 'TextBox'),
+    //                     this.getReadOnlyColumn('ExternalID', 'TextBox'),
+    //                     this.getReadOnlyColumn('Hidden', 'Boolean'),
+    //                     this.getReadOnlyColumn('ModificationDateTime', 'DateAndTime'),
+    //                 ],
+    //                 Columns: [
+    //                     { Width: 15 },
+    //                     { Width: 30 },
+    //                     { Width: 15 },
+    //                     { Width: 20 },
+    //                     { Width: 20 }  
+    //                 ],
+    //                 FrozenColumnsCount: 0,
+    //                 MinimumColumnWidth: 0
+    //             }, 
+    //             items: this.orderRows,
+    //             totalCount: this.orderRows.length
+    //         }
+    //     }
+    // }
+    
+    orderItemsRows: any[];
+    orderItemsListDataSource: IPepGenericListDataSource = {
+        init: async () => {
+            return {
+                dataView: {
+                    Context: {
+                        Name: '',
+                        Profile: { InternalID: 0 },
+                        ScreenSize: 'Landscape'
+                    },
+                    Type: 'Grid',
+                    Title: '',
+                    Fields: [
+                        this.getReadOnlyColumn('InternalID', 'TextBox'),
+                        this.getReadOnlyColumn('ExternalID', 'TextBox'),
+                        this.getReadOnlyColumn('UnitDiscountPercentage', 'TextBox'),
+                        this.getReadOnlyColumn('UnitPrice', 'TextBox'),
+                        this.getReadOnlyColumn('UnitPriceAfterDiscount', 'TextBox'),
+                        this.getReadOnlyColumn('UnitsQuantity', 'TextBox'),
+                        this.getReadOnlyColumn('CreationDateTime', 'DateAndTime'),
+                        this.getReadOnlyColumn('ModificationDateTime', 'DateAndTime'),
+                        this.getReadOnlyColumn('Hidden', 'TextBox'),
+                    ],
+                    Columns: [
+                        { Width: 10 },
+                        { Width: 20 },
+                        { Width: 7.5 },
+                        { Width: 7.5 },
+                        { Width: 10 },
+                        { Width: 10 },
+                        { Width: 10 },
+                        { Width: 10 },
+                        { Width: 10 }  
+                    ],
+                    FrozenColumnsCount: 0,
+                    MinimumColumnWidth: 0
+                }, 
+                items: this.orderItemsRows,
+                totalCount: this.orderItemsRows.length
+            }
+        }
+    }
+
+    operationsRows: any[];
+    operationsListDataSource: IPepGenericListDataSource = {
+        init: async () => {
+            return {
+                dataView: {
+                    Context: {
+                        Name: '',
+                        Profile: { InternalID: 0 },
+                        ScreenSize: 'Landscape'
+                    },
+                    Type: 'Grid',
+                    Title: '',
+                    Fields: [
+                        this.getReadOnlyColumn('OperationType', 'TextBox'),
+                        this.getReadOnlyColumn('NumOperationTries', 'TextBox'),
+                        this.getReadOnlyColumn('IsDone', 'TextBox'),
+                    ],
+                    Columns: [
+                        { Width: 40 },
+                        { Width: 40 },
+                        { Width: 20 }  
+                    ],
+                    FrozenColumnsCount: 0,
+                    MinimumColumnWidth: 0
+                }, 
+                items: this.operationsRows,
+                totalCount: this.operationsRows.length
+            }
+        }
+    }
+
     kibanaListDataSource: IPepGenericListDataSource = this.atdListDataSource;
     cloudListDataSource: IPepGenericListDataSource = this.atdListDataSource;
 
