@@ -52,6 +52,7 @@ class MyService {
             "Status": this.OrderStatus.GetNameStatsusByID(orderStatus.toString()) ? this.OrderStatus.GetNameStatsusByID(orderStatus.toString()) : orderStatus,
             "UserEmail": user.Email,
             "ExternalID": orderData.ExternalID,
+            "Hidden": orderData.Hidden,
             "ATDName": activityTypeDfinitionData.ExternalID,
             "CatalogExternalID": orderData.Catalog?.Data?.ExternalID
         };
@@ -73,6 +74,18 @@ class MyService {
         return result;
     }
 
+    async GetCloudWatchData(actionUUID: string, startTime: string, endTime: string, level: string) : Promise<any>{
+        let body = {
+            Groups: ['OperationInvoker', 'PAPI', 'CORE', 'CPAPI'],
+            Filter: `ActionUUID = '${actionUUID}' AND Level = '${level.toUpperCase()}'`,
+            Fields: ['Message', 'Exception', 'UserID', 'UserEmail', 'UserUUID'],
+            DateTimeStamp: {"Start": startTime, "End": endTime},
+            PageSize: 1000
+        }
+        let cloudWatchLogs : Array<any> = await this.papiClient.post('/logs', body);        
+        return cloudWatchLogs;
+    }
+
     GetTrasactionResult(orderData: Transaction){
         let orderRes = {
             "Hidden": orderData.Hidden,
@@ -91,6 +104,8 @@ class MyService {
                 "InternalID": orderItemsData[i].InternalID,
                 "Item": orderItemsData[i].Item,
                 "Hidden": orderItemsData[i].Hidden,
+                "CreationDateTime": orderItemsData[i].CreationDateTime,
+                "ModificationDateTime": orderItemsData[i].ModificationDateTime,
                 "UnitsQuantity": orderItemsData[i].UnitsQuantity,
                 "UnitPrice": orderItemsData[i].UnitPrice,
                 "UnitDiscountPercentage": orderItemsData[i].UnitDiscountPercentage,
