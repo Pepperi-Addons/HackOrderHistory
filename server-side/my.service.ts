@@ -67,6 +67,7 @@ class MyService {
             let log = {
                 "ActionUUID": auditLogs[i].ActionUUID,
                 "ActionType": auditLogs[i].ActionType,
+                "ObjectModificationDateTime": auditLogs[i].ObjectModificationDateTime,
                 "UpdatedFields": auditLogs[i].UpdatedFields
             };
             result.push(log);
@@ -74,13 +75,31 @@ class MyService {
         return result;
     }
 
-    async GetCloudWatchData(actionUUID: string, startTime: string, endTime: string, level: string) : Promise<any>{
+    async GetCloudWatchData(ActionsData: Array<any>, levels: Array<string>) : Promise<any>{
         let body = {
             Groups: ['OperationInvoker', 'PAPI', 'CORE', 'CPAPI'],
-            Filter: `ActionUUID = '${actionUUID}' AND Level = '${level.toUpperCase()}'`,
-            Fields: ['Message', 'Exception', 'UserID', 'UserEmail', 'UserUUID'],
-            DateTimeStamp: {"Start": startTime, "End": endTime},
+            Fields: ['ActionUUID', 'Level', 'Message', 'Exception', 'UserID', 'UserEmail', 'UserUUID'],
             PageSize: 1000
+        }
+        let levelFilter = "";
+        if(levels.length > 0){
+            levelFilter = `Level = '${levels[0].toUpperCase()}'`;
+            for( let i = 1; i < levels.length; i++){
+                levelFilter = levelFilter + ` OR Level = '${levels[i].toUpperCase()}'`;
+            }
+        }
+        
+        for(let i = 0; i < ActionsData.length; i++){
+            body["Filter"] = `(ActionUUID = '${ActionsData[i].ActionUUID}')`;
+            if(levelFilter){
+                body["Filter"] = body["Filter"] +  ` AND (${levelFilter})`;
+            }
+            
+            let objectModificationDateTime = new Date(ActionsData[i].ObjectModificationDateTime);
+            let startDate = new Date(objectModificationDateTime.getTime() - (1000 * (60 * 30)));
+            let endDate = new Date(objectModificationDateTime.getTime() + (1000 * (60 * 15)));
+
+            body["DateTimeStamp"] = {"Start": startDate.toISOString(), "End": endDate.toISOString()};
         }
         let cloudWatchLogs : Array<any> = await this.papiClient.post('/logs', body);        
         return cloudWatchLogs;
