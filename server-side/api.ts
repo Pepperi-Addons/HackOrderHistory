@@ -1,12 +1,16 @@
 import MyService from './my.service'
 import { Client, Request } from '@pepperi-addons/debug-server'
+import { PapiClient } from '@pepperi-addons/papi-sdk'
 
-// add functions here
-// this function will run on the 'api/foo' endpoint
-// the real function is runnning on another typescript file
-export async function foo(client: Client, request: Request) {
+export async function get_sql_data(client: Client, request: Request){
     const service = new MyService(client)
-    const res = await service.getAddons()
-    return res
-};
+    const res = await service.GetSQLData(request.query["order_id"]);
+    return res;
+}
+
+export async function get_header_data_from_sql(client: Client, request: Request){
+    const service = new MyService(client)
+    const res = await service.GetHeaderDataFromSQL(request.query["order_id"]);
+    return res;
+}
 
