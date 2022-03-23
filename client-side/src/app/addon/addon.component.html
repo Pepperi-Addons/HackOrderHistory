@@ -18,8 +18,8 @@
                 <pep-form layoutType="card" [layout]="headerUiControl" [data]="headerData">
                 </pep-form>
             </div>
-            <mat-tab-group *ngIf="tabsLoaded" (selectedTabChange)="tabClick($event)">
-                <mat-tab *ngIf="tabSqlLoaded">
+            <mat-tab-group *ngIf="tabSqlLoaded" (selectedTabChange)="tabClick($event)">
+                <mat-tab>
                     <ng-template mat-tab-label>
                         <span class="body-md">{{ 'SQL' | translate }}</span>
                     </ng-template>
@@ -94,12 +94,18 @@
                             {{ 'Cloud' | translate }}
                         </span>
                     </ng-template>
-                    <div class="cloud-header">
-                        <div class="cloud-sub-title">
-                            <p class="body-md" [innerHTML]="'Cloud_SubTitle' | translate"></p>
-                        </div>
+                    <div *ngIf="tabKibanaLoaded && currentTabIndex === 2" class="cloud-header">
+                        <pep-select mandatory="true" label="Actions uuids" type="multi" [value]="actionsUuidValue"
+                            [options]="actionsUuidsOptions"
+                            (valueChange)="onActionsUuidsChanged($event)">
+                        </pep-select>
+                        <pep-select label="Levels" type="multi" [value]="levelsValue"
+                            [options]="levelsOptions"
+                            (valueChange)="onLevelsValueChanged($event)">
+                        </pep-select>
+                        <pep-button value="load data" styleType="strong" [disabled]="actionsUuidsValue.length === 0" (buttonClick)="onLoadCloudDataClicked($event)"></pep-button>
                     </div>
-                    <div *ngIf="tabCloudLoaded && currentTabIndex === 2" class="cloud-content">
+                    <div *ngIf="tabCloudLoaded" class="cloud-content">
                         <div class="cloud-component">
                             <pep-generic-list [dataSource]="cloudListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                         </div>

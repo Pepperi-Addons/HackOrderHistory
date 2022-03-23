@@ -1,5 +1,86 @@
+@use '~@pepperi-addons/ngx-lib/src/core/style/abstracts/variables';
 @use '~@pepperi-addons/ngx-lib/src/core/style/abstracts/mixins';
 @use '~@pepperi-addons/ngx-lib/src/core/style/abstracts/functions';
+
+::ng-deep {
+    .mat-pseudo-checkbox-checked, 
+    .mat-pseudo-checkbox-indeterminate {
+        background: unset !important;
+    }
+
+    // .mat-option.mat-active:not(:hover) {
+    //     background: unset !important;
+    // }
+
+    .mat-select-panel {
+        .mat-option {
+            background: functions.get-pep-color(color-system-primary-invert, color-base) !important;
+
+            //&.mat-active,
+            &:hover {
+                @include mixins.state-weak-hover();
+            }
+            &:active {
+                @include mixins.state-weak-active(color-weak, false);
+                background: functions.get-pep-color(color-weak, color-tran-50) !important;
+            }
+            &:disabled {
+                @include mixins.state-weak-disable();
+            }
+        }
+        .mat-option.mat-selected {
+            @include mixins.state-weak-default();
+            // box-shadow: functions.get-pep-shadow(shadow-xs, soft);
+
+            //&.mat-active,
+            &:hover {
+                @include mixins.state-weak-hover();
+            }
+            &:active {
+                @include mixins.state-weak-active(color-weak, false);
+                background: functions.get-pep-color(color-weak, color-tran-50) !important;
+            }
+            &:disabled {
+                @include mixins.state-weak-disable();
+            }
+        }
+
+        .mat-pseudo-checkbox {
+            @include mixins.state-regular-default(true);
+
+            &:hover {
+                @include mixins.state-regular-hover(true);
+            }
+            &:active {
+                @include mixins.state-regular-active(true);
+            }
+            &:disabled {
+                @include mixins.state-regular-disable(true);
+            }
+        }
+
+        .mat-pseudo-checkbox.mat-pseudo-checkbox-checked,
+        .mat-pseudo-checkbox.mat-pseudo-checkbox-indeterminate {
+            @include mixins.state-regular-default(true);
+            @include mixins.inline(functions.get-pep-color(color-system-primary, color-flat-r-10), 1px, solid, true);
+
+            &:hover {
+                @include mixins.state-regular-hover(true);
+            }
+            &:active {
+                @include mixins.state-regular-active(true);
+            }
+            &:disabled {
+                @include mixins.state-regular-disable(true);
+            }
+        }
+
+        .mat-pseudo-checkbox::after {
+            color: functions.get-pep-color(color-text, color-main) !important;
+        }
+    }
+}
+    
 
 .search-order-number {
     height: 100%;
@@ -21,7 +102,6 @@
 
         background: functions.get-pep-color(color-system-primary-invert, color-base);
         box-shadow: functions.get-pep-shadow(shadow-sm, regular);
-
     }
 
     p {
@@ -55,6 +135,20 @@
         margin-bottom: 1rem;
     }
 
+    .cloud-header {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        
+        pep-select {
+            width: 300px;
+        }
+
+        pep-button {
+            margin-top: variables.$form-field-title-height;
+        }
+    }
+
     .sql-content {
         margin-top: -1rem;
 
@@ -72,27 +166,6 @@
             height: 8rem;
         }
     }
-
-    // .atd-content,
-    // .order-content,
-    // .order-items-content,
-    // .operations-content {
-    //     display: grid;
-        
-    //     .atd-sub-title,
-    //     .order-sub-title,
-    //     .order-items-sub-title,
-    //     .operations-sub-title-title {
-    //         margin-bottom: 1rem;
-    //     }
-
-    //     .atd-component,
-    //     .order-component,
-    //     .order-items-component,
-    //     .operations-component {
-    //         width: 100%;
-    //     }
-    // }
 
     // ------------------------------------------
     // Kibana tab

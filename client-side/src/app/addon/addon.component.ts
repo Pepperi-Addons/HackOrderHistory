@@ -9,7 +9,6 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { PepDialogData, PepDialogService } from "@pepperi-addons/ngx-lib/dialog";
 import { IPepSearchClickEvent } from "@pepperi-addons/ngx-lib/search";
 import { DataViewFieldType } from "@pepperi-addons/papi-sdk";
-// import { headerUiControl, headerData } from './hardcoded-data';
 
 @Component({
     selector: 'addon-module',
@@ -17,25 +16,26 @@ import { DataViewFieldType } from "@pepperi-addons/papi-sdk";
     styleUrls: ['./addon.component.scss']
 })
 export class AddonComponent implements OnInit {
-    @Input() hostObject: any;
-    
-    @Output() hostEvents: EventEmitter<any> = new EventEmitter<any>();
-    
+    headerData: any = null;
+    headerUiControl: any = null;
+
     screenSize: PepScreenSizeType;
     expansionPanelHeaderHeight = '*';
     orderNumber = '284220163'; //'282788636';
     hasError = false;
     headerDataLoaded = false;
-    tabsLoaded = false;
     tabSqlLoaded = false;
     tabKibanaLoaded = false;
     tabCloudLoaded = false;
-    
-    headerData: any = null;
-    headerUiControl: any = null;
 
     orderUUID = '';
     currentTabIndex = 0;
+    allActionsDataMap = new Map<string, string>();
+
+    actionsUuidsOptions = [];
+    actionsUuidsValue = '';
+    levelsOptions = [{ "key": "Info", "value": "Info" }, { "key": "Error", "value": "Error" }, { "key": "Debug", "value": "Debug" }];
+    levelsValue = 'Info;Error;Debug';
 
     constructor(
         public addonService: AddonService,
@@ -48,6 +48,19 @@ export class AddonComponent implements OnInit {
         this.layoutService.onResize$.subscribe(size => {
             this.screenSize = size;
         });
+    }
+
+    private initDataForOrderHistory() {
+        this.hasError = false;
+        this.headerDataLoaded = false;
+        this.tabSqlLoaded = false;
+        this.tabKibanaLoaded = false;
+        this.tabCloudLoaded = false;
+
+        this.orderUUID = '';
+        this.currentTabIndex = 0;
+        this.allActionsDataMap.clear();
+        this.actionsUuidsOptions = [];
     }
 
     private loadHeaderDetails(res) {
@@ -168,7 +181,6 @@ export class AddonComponent implements OnInit {
             }
         }
 
-        this.tabsLoaded = true;
         this.tabSqlLoaded = true;
     }
     
@@ -193,6 +205,12 @@ export class AddonComponent implements OnInit {
                         });
                     }
                 }
+
+                // Add data for cloud usage.
+                this.allActionsDataMap.set(actionItem['ActionUUID'], actionItem['ObjectModificationDateTime']);
+                this.actionsUuidsOptions.push({
+                    "key": actionItem['ActionUUID'], "value": actionItem['ActionUUID']
+                });
             }
         }
 
@@ -200,7 +218,23 @@ export class AddonComponent implements OnInit {
     }
     
     private loadCloudDetails(res) {
-        
+        debugger;
+        if (res) {
+            this.cloudRows = [];
+
+            for (let index = 0; index < res.length; index++) {
+                const cloudItem = res[index];
+                
+                this.kibanaActionsRows.push({
+                    ActionUUID: cloudItem['ActionUUID'],
+                    UserEmail: cloudItem['UserEmail'],
+                    Level: cloudItem['Level'],
+                    Message: cloudItem['Message'],
+                    Exception: cloudItem['Exception'],
+                });
+            }
+        }
+
         this.tabCloudLoaded = true;
     }
 
@@ -214,21 +248,12 @@ export class AddonComponent implements OnInit {
         }
     }
 
-    private initFlags() {
-        this.hasError = false;
-        this.headerDataLoaded = false;
-        this.tabsLoaded = false;
-        this.tabSqlLoaded = false;
-        this.tabKibanaLoaded = false;
-        this.tabCloudLoaded = false;
-    }
-
     ngOnInit() {
         // this.openFixDialog();
     }
 
     onSearchChanged(event: IPepSearchClickEvent) {
-        this.initFlags();
+        this.initDataForOrderHistory();
 
         // Search history for this order number.
         this.orderNumber = event.value;
@@ -240,11 +265,40 @@ export class AddonComponent implements OnInit {
         this.addonService.getSqlData(this.orderNumber).toPromise().then(res => {
             this.loadSqlDetails(res);
         });
-        
-        
-        // this.addonService.getCloudData(this.orderNumber).toPromise().then(res => {
-        //     this.loadCloudDetails(res);
-        // });
+    }
+
+    onActionsUuidsChanged(keys: string) {
+        this.actionsUuidsValue = keys;
+    }
+
+    onLevelsValueChanged(keys: string) {
+        this.levelsValue = keys;
+    }
+
+    onLoadCloudDataClicked(event) {
+        if (this.actionsUuidsValue.length > 0) {
+            const actionsUuidsArr = this.actionsUuidsValue.split(';');
+
+            // Prepare the data
+            const actionsData = actionsUuidsArr.map(actionUuid => {
+                return {
+                    ActionUUID: actionUuid,
+                    ObjectModificationDateTime: this.allActionsDataMap.get(actionUuid)
+                }
+            });
+
+            this.addonService.getCloudData(actionsData, this.levelsValue).toPromise().then(res => {
+                this.loadCloudDetails(res);
+            });
+        } else {
+            // Show Info msg.
+            const dialogData = new PepDialogData({
+                title: 'Info',
+                content: 'Please select at least one action UUID',
+            });
+
+            this.dialogService.openDefaultDialog(dialogData);
+        }
     }
 
     openFixDialog() {
@@ -442,21 +496,38 @@ export class AddonComponent implements OnInit {
         }
     }
     
-    cloudListDataSource: IPepGenericListDataSource = this.atdListDataSource;
-
-    // actions: IPepGenericListActions = {
-    //     get: async (data: PepSelectionData) => {
-    //         if (data.rows.length) {
-    //             return [{
-    //                 title: this.translate.instant("Edit"),
-    //                 handler: async (objs) => {
-    //                     this.router.navigate([objs[0].Key], {
-    //                         relativeTo: this.route,
-    //                         queryParamsHandling: 'merge'
-    //                     });
-    //                 }
-    //             }]
-    //         } else return []
-    //     }
-    // }
+    cloudRows: any[];
+    cloudListDataSource: IPepGenericListDataSource = {
+        init: async () => {
+            return {
+                dataView: {
+                    Context: {
+                        Name: '',
+                        Profile: { InternalID: 0 },
+                        ScreenSize: 'Landscape'
+                    },
+                    Type: 'Grid',
+                    Title: '',
+                    Fields: [
+                        this.getReadOnlyColumn('ActionUUID', 'TextBox'),
+                        this.getReadOnlyColumn('UserEmail', 'TextBox'),
+                        this.getReadOnlyColumn('Level', 'TextBox'),
+                        this.getReadOnlyColumn('Message', 'TextBox'),
+                        this.getReadOnlyColumn('Exception', 'TextBox'),
+                    ],
+                    Columns: [
+                        { Width: 10 },
+                        { Width: 30 },
+                        { Width: 20 },
+                        { Width: 20 },
+                        { Width: 20 }  
+                    ],
+                    FrozenColumnsCount: 0,
+                    MinimumColumnWidth: 0
+                }, 
+                items: this.cloudRows,
+                totalCount: this.cloudRows.length
+            }
+        }
+    }
 }

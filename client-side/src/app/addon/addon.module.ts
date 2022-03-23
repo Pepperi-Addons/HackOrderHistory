@@ -14,6 +14,7 @@ import { PepSizeDetectorModule } from '@pepperi-addons/ngx-lib/size-detector';
 import { PepPageLayoutModule } from '@pepperi-addons/ngx-lib/page-layout';
 import { PepIconRegistry, PepIconModule, pepIconSystemClose } from '@pepperi-addons/ngx-lib/icon';
 import { PepButtonModule } from '@pepperi-addons/ngx-lib/button';
+import { PepSelectModule } from '@pepperi-addons/ngx-lib/select';
 import { PepDialogModule } from '@pepperi-addons/ngx-lib/dialog';
 import { PepMenuModule } from '@pepperi-addons/ngx-lib/menu';
 // import { PepListModule } from '@pepperi-addons/ngx-lib/list';
@@ -60,6 +61,7 @@ export const routes: Routes = [
         PepMenuModule,
         PepPageLayoutModule,
         PepButtonModule,
+        PepSelectModule,
         PepDialogModule,
         // PepListModule,
         PepSearchModule,

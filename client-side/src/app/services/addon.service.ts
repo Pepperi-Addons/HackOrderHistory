@@ -54,7 +54,12 @@ export class AddonService {
     }
 
     // Get the cloud data.
-    getCloudData(orderNumber: string): Observable<boolean> {
-        return this.httpService.getHttpCall(`${this.serverBaseURL}/get_cloud_data?order_id=${orderNumber}`);
+    getCloudData(actionsData: any[], levels: string): Observable<boolean> {
+        const body = {
+            ActionsData: actionsData,
+            Levels: levels,
+        };
+
+        return this.httpService.postHttpCall(`${this.serverBaseURL}/get_cloud_data`, body);
     }
 }
