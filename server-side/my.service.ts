@@ -77,7 +77,7 @@ class MyService {
     async GetCloudWatchData(ActionsData: Array<any>, levels: Array<string>) : Promise<any>{
         let body = {
             Groups: ['OperationInvoker', 'PAPI', 'CORE', 'CPAPI'],
-            Fields: ['ActionUUID', 'Level', 'Message', 'Exception', 'UserID', 'UserEmail', 'UserUUID'],
+            Fields: ['DateTimeStamp','ActionUUID', 'Level', 'Message', 'Exception', 'UserID', 'UserEmail', 'UserUUID'],
             PageSize: 1000
         }
         let levelFilter = "";
