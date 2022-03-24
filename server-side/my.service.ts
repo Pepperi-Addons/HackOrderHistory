@@ -65,10 +65,10 @@ class MyService {
         let result: Array<any> = [];
         for (let i = 0; i < auditLogs.length; i++){
             let userUUID: any = auditLogs[i].UserUUID;
-            let user:Array<User> = await this.papiClient.users.iter({where: `UUID='${userUUID}'`}).toArray();
+            let user: User = await this.papiClient.users.uuid(userUUID).get();
             let log = {
                 "ActionUUID": auditLogs[i].ActionUUID,
-                "UserUUID": user[0]?.Email,
+                "UserEmail": user.Email,
                 "ActionType": auditLogs[i].ActionType,
                 "ObjectModificationDateTime": auditLogs[i].ObjectModificationDateTime,
                 "UpdatedFields": auditLogs[i].UpdatedFields
@@ -76,6 +76,12 @@ class MyService {
             result.push(log);
         }      
         return result;
+    }
+
+    async GetDeviceData(ActionsData: Array<any>){
+        for(let i = 0; i < ActionsData.length; i++){
+            this.papiClient.auditLogs.uuid
+        }
     }
 
     async GetCloudWatchData(ActionsData: Array<any>, levels: Array<string>) : Promise<any>{
@@ -195,8 +201,8 @@ class MyService {
             if(result[i]['UserUUID'] != null && result[i]['UserUUID'] != ""){            
                 if(result[i]['UserEmail'] == null){
                     let userUUID: any = result[i]['UserUUID'];
-                    let user:Array<User> = await this.papiClient.users.iter({where: `UUID='${userUUID}'`}).toArray();
-                    result[i]['UserEmail'] = user[0]?.Email;
+                    let user:User = await this.papiClient.users.uuid(userUUID).get();;
+                    result[i]['UserEmail'] = user.Email;
                 }
                 delete result[i].UserUUID;
             }
