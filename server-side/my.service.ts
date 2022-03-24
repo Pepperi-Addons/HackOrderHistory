@@ -1,4 +1,4 @@
-import { PapiClient, InstalledAddon, TransactionLines, Transaction, ATDMetaData, User } from '@pepperi-addons/papi-sdk'
+import { PapiClient, InstalledAddon, TransactionLines, Transaction, ATDMetaData, User, AuditLog } from '@pepperi-addons/papi-sdk'
 import { Client } from '@pepperi-addons/debug-server';
 import { OrderStatus, OperationType } from './MappingNames'
 import peach from 'parallel-each';
@@ -78,10 +78,26 @@ class MyService {
         return result;
     }
 
-    async GetDeviceData(ActionsData: Array<any>){
-        for(let i = 0; i < ActionsData.length; i++){
-            this.papiClient.auditLogs.uuid
+    async GetDeviceData(actionsUUIDs: Array<string>){
+        let result: Array<any> = [];
+        for(let i = 0; i < actionsUUIDs.length; i++){
+            let log: AuditLog = await this.papiClient.auditLogs.uuid(actionsUUIDs[i]).get();
+            if(log != null && log.AuditInfo != null && log.AuditInfo.ResultObject != null && log.AuditInfo.ResultObject != {} && log.AuditInfo.ResultObject != ""){
+                let deviceInfoString: string = log.AuditInfo.ResultObject;
+                let deviceInfo = JSON.parse(deviceInfoString);
+                if(deviceInfo != null && deviceInfo.ClientInfo != null){
+                    result.push({
+                        ActionUUID: actionsUUIDs[i],
+                        FormattedLastSyncDateTime: deviceInfo.ClientInfo['FormattedLastSyncDateTime'],
+                        DeviceExternalID: deviceInfo.ClientInfo['DeviceExternalID'],
+                        SoftwareVersion: deviceInfo.ClientInfo['SoftwareVersion'],
+                        DeviceModel: deviceInfo.ClientInfo['DeviceModel'],
+                        SystemVersion: deviceInfo.ClientInfo['SystemVersion']
+                    });          
+                }
+            }
         }
+        return result;
     }
 
     async GetCloudWatchData(ActionsData: Array<any>, levels: Array<string>) : Promise<any>{
