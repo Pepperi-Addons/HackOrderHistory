@@ -1,6 +1,7 @@
-import { PapiClient, InstalledAddon, TransactionLines, Transaction, ATDMetaData } from '@pepperi-addons/papi-sdk'
+import { PapiClient, InstalledAddon, TransactionLines, Transaction, ATDMetaData, User } from '@pepperi-addons/papi-sdk'
 import { Client } from '@pepperi-addons/debug-server';
 import { OrderStatus, OperationType } from './MappingNames'
+import peach from 'parallel-each';
 
 class MyService {
     papiClient: PapiClient
@@ -60,11 +61,14 @@ class MyService {
 
     async GetKibanaData(orderUUID: string) : Promise<any>{
         let relativeUrl = `/addons/api/00000000-0000-0000-0000-00000da1a109/api/audit_data_logs?where=ObjectKey.keyword=${orderUUID}&order_by=CreationDateTime DESC`;
-        let auditLogs : Array<any> = await this.papiClient.get(relativeUrl);      
+        let auditLogs : Array<any> = await this.papiClient.get(relativeUrl);    
         let result: Array<any> = [];
         for (let i = 0; i < auditLogs.length; i++){
+            let userUUID: any = auditLogs[i].UserUUID;
+            let user:Array<User> = await this.papiClient.users.iter({where: `UUID='${userUUID}'`}).toArray();
             let log = {
                 "ActionUUID": auditLogs[i].ActionUUID,
+                "UserUUID": user[0]?.Email,
                 "ActionType": auditLogs[i].ActionType,
                 "ObjectModificationDateTime": auditLogs[i].ObjectModificationDateTime,
                 "UpdatedFields": auditLogs[i].UpdatedFields
@@ -75,9 +79,9 @@ class MyService {
     }
 
     async GetCloudWatchData(ActionsData: Array<any>, levels: Array<string>) : Promise<any>{
+        const groups = ['OperationInvoker', 'PAPI', 'CORE', 'CPAPI'];
         let body = {
-            Groups: ['OperationInvoker', 'PAPI', 'CORE', 'CPAPI'],
-            Fields: ['DateTimeStamp','ActionUUID', 'Level', 'Message', 'Exception', 'UserID', 'UserEmail', 'UserUUID'],
+            Fields: ['DateTimeStamp','ActionUUID', 'Level', 'Message', 'Exception'],
             PageSize: 1000
         }
         let levelFilter = "";
@@ -96,12 +100,15 @@ class MyService {
             
             let objectModificationDateTime = new Date(ActionsData[i].ObjectModificationDateTime);
             let startDate = new Date(objectModificationDateTime.getTime() - (1000 * (60 * 30)));
-            let endDate = new Date(objectModificationDateTime.getTime() + (1000 * (60 * 15)));
+            let endDate = new Date(objectModificationDateTime.getTime() + (1000 * (60 * 10)));
 
             body["DateTimeStamp"] = {"Start": startDate.toISOString(), "End": endDate.toISOString()};
         }
-        let cloudWatchLogs : Array<any> = await this.papiClient.post('/logs', body);        
-        return this.BuildResultFromCloudWatch(cloudWatchLogs);
+           
+        //let result = await this.BuildResultFromCloudWatch(cloudWatchLogs);
+        let cloudWatchLogs = await this.GetLogsFromCloudWatchParallel(groups, body);
+        cloudWatchLogs.sort((a,b) => (a.DateTimeStamp > b.DateTimeStamp) ? 1 : ((b.DateTimeStamp > a.DateTimeStamp) ? -1 : 0))
+        return cloudWatchLogs;
     }
 
     GetTrasactionResult(orderData: Transaction){
@@ -162,19 +169,40 @@ class MyService {
         return activityTypeDfinitionRes;
     }
 
-    BuildResultFromCloudWatch(resultFromCloudWatch: Array<any>){
+    async GetLogsFromCloudWatchParallel(groups: Array<string>, body: any){
+        const maxParallel = 5;
+        let output: Array<any> = [];
+        await peach(groups, async (group, index) => {
+            body['Groups'] = [group];
+            let cloudWatchLogs : Array<any> = await this.papiClient.post('/logs', body);
+            output.push(...cloudWatchLogs);
+        }, maxParallel)
+        return output;
+    }
+
+    /*async BuildResultFromCloudWatch(resultFromCloudWatch: Array<any>){
         let result: Array<any> = [];
         for(let i = 0; i < resultFromCloudWatch.length; i++){
             result.push(resultFromCloudWatch[i]);
-            if(result[i]['UserUUID'] != null && result[i]['UserUUID'] != ""){
+            if(result[i]['UserID'] != null){               
                 if(result[i]['UserEmail'] == null){
-                    result[i]['UserEmail'] = "nofartest";
+                    let userID: any = result[i]['UserID'];
+                    let user: User = await this.papiClient.users.get(userID);
+                    result[i]['UserEmail'] = user.Email;
+                }
+                delete result[i].UserID;
+            }
+            if(result[i]['UserUUID'] != null && result[i]['UserUUID'] != ""){            
+                if(result[i]['UserEmail'] == null){
+                    let userUUID: any = result[i]['UserUUID'];
+                    let user:Array<User> = await this.papiClient.users.iter({where: `UUID='${userUUID}'`}).toArray();
+                    result[i]['UserEmail'] = user[0]?.Email;
                 }
                 delete result[i].UserUUID;
             }
         }
         return result;
-    }
+    }*/
 }
 
 export default MyService;
