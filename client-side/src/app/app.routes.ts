@@ -19,10 +19,10 @@ const routes: Routes = [
                 path: 'OrderHistory',
                 component: AddonComponent,
             },
-            {
-                path: 'OrderHistory/:todo_uuid',
-                component: TodoForm
-            }
+            // {
+            //     path: 'OrderHistory/:todo_uuid',
+            //     component: TodoForm
+            // }
         ]
     },
     {

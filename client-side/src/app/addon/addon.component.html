@@ -45,7 +45,7 @@
                                     <pep-generic-list [dataSource]="orderListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                                 </div>
                             </mat-expansion-panel> -->
-                            <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel >
                                 <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
                                     <mat-panel-title class="ellipsis body-md">
                                         {{ 'Order_Items' | translate }}
@@ -55,7 +55,7 @@
                                     <pep-generic-list [dataSource]="orderItemsListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                                 </div>
                             </mat-expansion-panel>
-                            <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel >
                                 <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
                                     <mat-panel-title class="ellipsis body-md">
                                         {{ 'Operations' | translate }}
