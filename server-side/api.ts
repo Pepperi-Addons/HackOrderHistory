@@ -23,7 +23,7 @@ export async function get_kibana_data(client: Client, request: Request){
 export async function get_device_data(client: Client, request: Request){
     const service = new MyService(client);
     let actionsUUIDsString: string = request.query["actions_uuids"].toLowerCase();
-    let actionsUUIDs: Array<string> = actionsUUIDsString.split(',');
+    let actionsUUIDs: Array<string> = actionsUUIDsString.split(';');
     const res = await service.GetDeviceData(actionsUUIDs);
     return res;
 }

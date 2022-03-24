@@ -29,7 +29,6 @@ import { TranslateLoader, TranslateModule, TranslateService, TranslateStore } fr
 
 import { AddonService } from '../services/addon.service';
 import { AddonComponent } from './index';
-import { TodoForm } from './form/todo-form.component';
 
 const pepIcons = [
     pepIconSystemClose,
@@ -45,7 +44,6 @@ export const routes: Routes = [
 @NgModule({
     declarations: [
         AddonComponent,
-        TodoForm
     ],
     imports: [
         CommonModule,

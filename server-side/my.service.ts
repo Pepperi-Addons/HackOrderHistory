@@ -27,13 +27,13 @@ class MyService {
         let orderData : Transaction = await this.papiClient.transactions.get(orderID);      
         let operationData : Array<any> = await this.papiClient.get('/operations?where=ReceiverID=' + orderID);      
         let orderItemsData : TransactionLines[] = await this.papiClient.transactionLines.iter({where: "Transaction.WrntyID=" + orderID}).toArray();
-        let activityTypeDfinitionData: ATDMetaData = await this.papiClient.get("/meta_data/Transactions/types/" + orderData.ActivityTypeID);
+        //let activityTypeDfinitionData: ATDMetaData = await this.papiClient.get("/meta_data/Transactions/types/" + orderData.ActivityTypeID);
 
         let result = {
             "Order": this.GetTrasactionResult(orderData),
             "OrderItems": this.GetTrasactionLineResult(orderItemsData),
             "Operation": this.GetOperationResult(operationData),
-            "ATD": this.GetATDResult(activityTypeDfinitionData)
+            //"ATD": this.GetATDResult(activityTypeDfinitionData)
         };
         return result;
     }
@@ -52,9 +52,13 @@ class MyService {
             "Status": this.OrderStatus.GetNameStatsusByID(orderStatus.toString()) ? this.OrderStatus.GetNameStatsusByID(orderStatus.toString()) : orderStatus,
             "UserEmail": user.Email,
             "ExternalID": orderData.ExternalID,
-            "Hidden": orderData.Hidden,
+            "Hidden": orderData.Hidden + '',
+            "CatalogExternalID": orderData.Catalog?.Data?.ExternalID,
             "ATDName": activityTypeDfinitionData.ExternalID,
-            "CatalogExternalID": orderData.Catalog?.Data?.ExternalID
+            "ATDHidden": activityTypeDfinitionData.Hidden + '',
+            "ATDCreationDateTime": activityTypeDfinitionData.CreationDateTime,  
+            "ATDDescription": activityTypeDfinitionData.Description,
+            "ATDModificationDateTime": activityTypeDfinitionData.ModificationDateTime,
         };
         return result;
     }

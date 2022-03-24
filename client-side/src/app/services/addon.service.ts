@@ -39,22 +39,22 @@ export class AddonService {
     }
 
     // Get the header data.
-    getHeaderData(orderNumber: string): Observable<boolean> {
+    getHeaderData(orderNumber: string): Observable<any> {
         return this.httpService.getHttpCall(`${this.serverBaseURL}/get_header_data_from_sql?order_id=${orderNumber}`);
     }
 
     // Get the sql data.
-    getSqlData(orderNumber: string): Observable<boolean> {
+    getSqlData(orderNumber: string): Observable<any> {
         return this.httpService.getHttpCall(`${this.serverBaseURL}/get_sql_data?order_id=${orderNumber}`);
     }
 
     // Get the kibana data.
-    getKibanaData(orderUUID: string): Observable<boolean> {
+    getKibanaData(orderUUID: string): Observable<any> {
         return this.httpService.getHttpCall(`${this.serverBaseURL}/get_kibana_data?order_uuid=${orderUUID}`);
     }
 
     // Get the cloud data.
-    getCloudData(actionsData: any[], levels: string[]): Observable<boolean> {
+    getCloudData(actionsData: any[], levels: string[]): Observable<any> {
         const body = {
             ActionsData: actionsData,
             Levels: levels,
@@ -62,4 +62,10 @@ export class AddonService {
 
         return this.httpService.postHttpCall(`${this.serverBaseURL}/get_could_watch_data`, body);
     }
+
+    // Get the divice details data.
+    getDeviceDetailsData(actionsData: string): Observable<any> {
+        return this.httpService.getHttpCall(`${this.serverBaseURL}/get_device_data?actions_uuids=${actionsData}`);
+    }
+    
 }

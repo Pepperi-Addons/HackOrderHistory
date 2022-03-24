@@ -27,6 +27,7 @@ export class AddonComponent implements OnInit {
     tabSqlLoaded = false;
     tabKibanaLoaded = false;
     tabCloudLoaded = false;
+    tabDeviceDetailsLoaded = false;
     hasErrorInCloud = false;
 
     orderUUID = '';
@@ -34,10 +35,12 @@ export class AddonComponent implements OnInit {
     allActionsDataMap = new Map<string, string>();
 
     actionsUuidsOptions = [];
-    actionsUuidsValue = '';
+    actionsUuidsCloudValue = '';
     levelsOptions = [{ "key": "Info", "value": "Info" }, { "key": "Error", "value": "Error" }, { "key": "Debug", "value": "Debug" }];
     levelsValue = 'Info;Error;Debug';
 
+    actionsUuidsDeviceDetailsValue = '';
+    
     constructor(
         public addonService: AddonService,
         public router: Router,
@@ -57,6 +60,7 @@ export class AddonComponent implements OnInit {
         this.tabSqlLoaded = false;
         this.tabKibanaLoaded = false;
         this.tabCloudLoaded = false;
+        this.tabDeviceDetailsLoaded = false;
         this.hasErrorInCloud = false;
 
         this.orderUUID = '';
@@ -66,7 +70,7 @@ export class AddonComponent implements OnInit {
     }
 
     private loadHeaderDetails(res) {
-        const columnsNumber = 3;
+        const columnsNumber = 4;
         const headerUiControl = {
             Columns: columnsNumber,
             ControlFields: []
@@ -205,6 +209,7 @@ export class AddonComponent implements OnInit {
                         this.kibanaActionsRows.push({
                             ActionType: actionItem['ActionType'],
                             ActionUUID: actionItem['ActionUUID'],
+                            UserEmail: actionItem['UserEmail'],
                             FieldID: updatedField['FieldID'],
                             OldValue: updatedField['FieldID'].indexOf('DateTime') >= 0 ? this.getDateValue(updatedField['OldValue']) : updatedField['OldValue'],
                             NewValue: updatedField['FieldID'].indexOf('DateTime') >= 0 ? this.getDateValue(updatedField['NewValue']) : updatedField['NewValue'],
@@ -233,7 +238,7 @@ export class AddonComponent implements OnInit {
                 this.cloudRows.push({
                     DateTimeStamp: this.getDateValue(cloudItem['DateTimeStamp']),
                     ActionUUID: cloudItem['ActionUUID'],
-                    UserEmail: cloudItem['UserEmail'],
+                    // UserEmail: cloudItem['UserEmail'],
                     Level: cloudItem['Level'],
                     Message: cloudItem['Message'],
                     Exception: cloudItem['Exception'],
@@ -248,6 +253,27 @@ export class AddonComponent implements OnInit {
         }
 
         this.tabCloudLoaded = true;
+    }
+
+    private loadDeviceDetails(res) {
+        if (res) {
+            this.deviceDetailsRows = [];
+
+            for (let index = 0; index < res.length; index++) {
+                const deviceDetailsItem = res[index];
+                
+                this.deviceDetailsRows.push({
+                    ActionUUID: deviceDetailsItem['ActionUUID'],
+                    FormattedLastSyncDateTime: this.getDateValue(deviceDetailsItem['FormattedLastSyncDateTime']),
+                    DeviceExternalID: deviceDetailsItem['DeviceExternalID'],
+                    SoftwareVersion: deviceDetailsItem['SoftwareVersion'],
+                    DeviceModel: deviceDetailsItem['DeviceModel'],
+                    SystemVersion: deviceDetailsItem['SystemVersion'],
+                });
+            }
+        }
+
+        this.tabDeviceDetailsLoaded = true;
     }
 
     private getReadOnlyColumn(columnId: string, type: DataViewFieldType): any {
@@ -281,8 +307,8 @@ export class AddonComponent implements OnInit {
         }
     }
 
-    onActionsUuidsChanged(keys: string) {
-        this.actionsUuidsValue = keys;
+    onActionsUuidsCloudChanged(keys: string) {
+        this.actionsUuidsCloudValue = keys;
     }
 
     onLevelsValueChanged(keys: string) {
@@ -290,8 +316,9 @@ export class AddonComponent implements OnInit {
     }
 
     onLoadCloudDataClicked(event) {
-        if (this.actionsUuidsValue.length > 0) {
-            const actionsUuidsArr = this.actionsUuidsValue.split(';');
+        if (this.actionsUuidsCloudValue.length > 0) {
+            this.tabCloudLoaded = false;
+            const actionsUuidsArr = this.actionsUuidsCloudValue.split(';');
 
             // Prepare the data
             const actionsData = actionsUuidsArr.map(actionUuid => {
@@ -303,6 +330,28 @@ export class AddonComponent implements OnInit {
 
             this.addonService.getCloudData(actionsData, this.levelsValue.split(';')).toPromise().then(res => {
                 this.loadCloudDetails(res);
+            });
+        } else {
+            // Show Info msg.
+            const dialogData = new PepDialogData({
+                title: 'Info',
+                content: 'Please select at least one action UUID',
+            });
+
+            this.dialogService.openDefaultDialog(dialogData);
+        }
+    }
+    
+    onActionsUuidsDeviceDetailsChanged(keys: string) {
+        this.actionsUuidsDeviceDetailsValue = keys;
+    }
+
+    onLoadDeviceDetailsDataClicked(event) {
+        if (this.actionsUuidsDeviceDetailsValue.length > 0) {
+            this.tabDeviceDetailsLoaded = false;
+
+            this.addonService.getDeviceDetailsData(this.actionsUuidsDeviceDetailsValue).toPromise().then(res => {
+                this.loadDeviceDetails(res);
             });
         } else {
             // Show Info msg.
@@ -490,14 +539,16 @@ export class AddonComponent implements OnInit {
                     Fields: [
                         this.getReadOnlyColumn('ActionType', 'TextBox'),
                         this.getReadOnlyColumn('ActionUUID', 'TextBox'),
+                        this.getReadOnlyColumn('UserEmail', 'TextBox'),
                         this.getReadOnlyColumn('FieldID', 'TextBox'),
                         this.getReadOnlyColumn('OldValue', 'TextBox'),
                         this.getReadOnlyColumn('NewValue', 'TextBox'),
                     ],
                     Columns: [
                         { Width: 10 },
-                        { Width: 30 },
-                        { Width: 20 },
+                        { Width: 25 },
+                        { Width: 15 },
+                        { Width: 10 },
                         { Width: 20 },
                         { Width: 20 }  
                     ],
@@ -525,7 +576,7 @@ export class AddonComponent implements OnInit {
                     Fields: [
                         this.getReadOnlyColumn('DateTimeStamp', 'TextBox'),
                         this.getReadOnlyColumn('ActionUUID', 'TextBox'),
-                        this.getReadOnlyColumn('UserEmail', 'TextBox'),
+                        // this.getReadOnlyColumn('UserEmail', 'TextBox'),
                         this.getReadOnlyColumn('Level', 'TextBox'),
                         this.getReadOnlyColumn('Message', 'TextBox'),
                         this.getReadOnlyColumn('Exception', 'TextBox'),
@@ -533,16 +584,53 @@ export class AddonComponent implements OnInit {
                     Columns: [
                         { Width: 15 },
                         { Width: 25 },
-                        { Width: 15 },
+                        // { Width: 15 },
                         { Width: 5 },
-                        { Width: 30 },
-                        { Width: 10 }  
+                        { Width: 40 },
+                        { Width: 15 }  
                     ],
                     FrozenColumnsCount: 0,
                     MinimumColumnWidth: 0
                 }, 
                 items: this.cloudRows,
                 totalCount: this.cloudRows.length
+            }
+        }
+    }
+    
+    deviceDetailsRows: any[];
+    deviceDetailsListDataSource: IPepGenericListDataSource = {
+        init: async () => {
+            return {
+                dataView: {
+                    Context: {
+                        Name: '',
+                        Profile: { InternalID: 0 },
+                        ScreenSize: 'Landscape'
+                    },
+                    Type: 'Grid',
+                    Title: '',
+                    Fields: [
+                        this.getReadOnlyColumn('ActionUUID', 'TextBox'),
+                        this.getReadOnlyColumn('FormattedLastSyncDateTime', 'TextBox'),
+                        this.getReadOnlyColumn('DeviceExternalID', 'TextBox'),
+                        this.getReadOnlyColumn('SoftwareVersion', 'TextBox'),
+                        this.getReadOnlyColumn('DeviceModel', 'TextBox'),
+                        this.getReadOnlyColumn('SystemVersion', 'TextBox'),
+                    ],
+                    Columns: [
+                        { Width: 20 },
+                        { Width: 20 },
+                        { Width: 15 },
+                        { Width: 15 },
+                        { Width: 15 },
+                        { Width: 15 }  
+                    ],
+                    FrozenColumnsCount: 0,
+                    MinimumColumnWidth: 0
+                }, 
+                items: this.deviceDetailsRows,
+                totalCount: this.deviceDetailsRows.length
             }
         }
     }

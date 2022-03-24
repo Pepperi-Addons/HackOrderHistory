@@ -94,10 +94,10 @@
 
     .order-history-main-details {
         height: auto;
-        padding: 0.5rem 0;
-        margin-bottom: 0.25rem;
-        // @include mixins.pep-border(border-left, solid, true);
-        // @include mixins.pep-border(border-right, solid, true);
+        padding: 1rem;
+        // margin-bottom: 0.25rem;
+        @include mixins.pep-border(border-left, solid, true);
+        @include mixins.pep-border(border-right, solid, true);
         @include mixins.pep-border(border-bottom, solid, true);
 
         background: functions.get-pep-color(color-system-primary-invert, color-base);
@@ -139,6 +139,7 @@
     // SQL tab
     // ------------------------------------------
     .sql-content {
+        height: 100%;
         margin-top: -1rem;
 
         ::ng-deep.mat-expansion-panel-body {
@@ -177,7 +178,8 @@
             display: flex;
             gap: 1rem;
             align-items: flex-start;
-    
+            padding: 0 0.25rem;
+
             pep-select {
                 width: 300px;
             }
@@ -190,7 +192,7 @@
         .cloud-content {
             display: grid;
             height: 100%;
-            
+
             .cloud-sub-title {
                 margin-bottom: 1rem;
             }
@@ -202,6 +204,43 @@
     }
 
     // ------------------------------------------
+    // Device details tab
+    // ------------------------------------------
+    .device-details-container {
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr;
+
+        .device-details-header {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            padding: 0 0.25rem;
+
+            pep-select {
+                width: 300px;
+            }
+    
+            pep-button {
+                margin-top: variables.$form-field-title-height;
+            }
+        }
+    
+        .device-details-content {
+            display: grid;
+            height: 100%;
+
+            .device-details-sub-title {
+                margin-bottom: 1rem;
+            }
+    
+            .device-details-component {
+                width: 100%;
+            }
+        }
+    }
+    
+    // ------------------------------------------
     // IPass tab
     // ------------------------------------------
     .ipass-content {
@@ -212,21 +251,6 @@
         }
 
         .ipass-component {
-            width: 100%;
-        }
-    }
-
-    // ------------------------------------------
-    // Device details tab
-    // ------------------------------------------
-    .device-details-content {
-        display: grid;
-        
-        .device-details-sub-title {
-            margin-bottom: 1rem;
-        }
-
-        .device-details-component {
             width: 100%;
         }
     }
