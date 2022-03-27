@@ -104,7 +104,7 @@
                                 (valueChange)="onLevelsValueChanged($event)">
                             </pep-select>
                             <pep-button value="load data" styleType="strong" [disabled]="actionsUuidsCloudValue.length === 0" (buttonClick)="onLoadCloudDataClicked($event)"></pep-button>
-                            <pep-button *ngIf="hasErrorInCloud" value="fix all problems (AI)" styleType="strong" styleStateType="caution" (buttonClick)="openFixDialog($event)"></pep-button>
+                            <!-- <pep-button *ngIf="hasErrorInCloud" value="fix all problems (AI)" styleType="strong" styleStateType="caution" (buttonClick)="openFixDialog($event)"></pep-button> -->
                         </div>
                         <div *ngIf="tabCloudLoaded" class="cloud-content">
                             <pep-generic-list [dataSource]="cloudListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>

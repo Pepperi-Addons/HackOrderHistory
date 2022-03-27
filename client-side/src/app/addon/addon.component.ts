@@ -21,14 +21,14 @@ export class AddonComponent implements OnInit {
 
     screenSize: PepScreenSizeType;
     expansionPanelHeaderHeight = '*';
-    orderNumber = '284220163'; //'282788636';
+    orderNumber = '';
     hasError = false;
     headerDataLoaded = false;
     tabSqlLoaded = false;
     tabKibanaLoaded = false;
     tabCloudLoaded = false;
     tabDeviceDetailsLoaded = false;
-    hasErrorInCloud = false;
+    // hasErrorInCloud = false;
 
     orderUUID = '';
     currentTabIndex = 0;
@@ -61,7 +61,7 @@ export class AddonComponent implements OnInit {
         this.tabKibanaLoaded = false;
         this.tabCloudLoaded = false;
         this.tabDeviceDetailsLoaded = false;
-        this.hasErrorInCloud = false;
+        // this.hasErrorInCloud = false;
 
         this.orderUUID = '';
         this.currentTabIndex = 0;
@@ -244,11 +244,9 @@ export class AddonComponent implements OnInit {
                     Exception: cloudItem['Exception'],
                 });
 
-                if (!this.hasErrorInCloud) {
-                    this.hasErrorInCloud = cloudItem['Exception']?.length > 0;
-                    // TODO: remove this
-                    this.hasErrorInCloud = true;
-                }
+                // if (!this.hasErrorInCloud) {
+                //     this.hasErrorInCloud = cloudItem['Exception']?.length > 0;
+                // }
             }
         }
 
@@ -287,7 +285,6 @@ export class AddonComponent implements OnInit {
     }
 
     ngOnInit() {
-        // this.openFixDialog();
     }
 
     onSearchChanged(event: IPepSearchClickEvent) {
@@ -364,16 +361,16 @@ export class AddonComponent implements OnInit {
         }
     }
 
-    openFixDialog() {
-        // Show limit error msg.
-        const dialogData = new PepDialogData({
-            title: 'Just kidding',
-            content: '<p>If you really want to fix the problems<br/><span class="bold title-lg">call Diogo - 052-44757XX<span><p>',
-            // showHeader: false
-        });
+    // openFixDialog() {
+    //     // Show limit error msg.
+    //     const dialogData = new PepDialogData({
+    //         title: 'Just kidding',
+    //         content: '<p>If you really want to fix the problems<br/><span class="bold title-lg">call Diogo - 052-44757XX<span><p>',
+    //         // showHeader: false
+    //     });
 
-        this.dialogService.openDefaultDialog(dialogData);
-    }
+    //     this.dialogService.openDefaultDialog(dialogData);
+    // }
     
     tabClick(event) {
         this.currentTabIndex = event.index;
