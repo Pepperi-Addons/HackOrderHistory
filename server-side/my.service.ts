@@ -14,7 +14,7 @@ class MyService {
             token: client.OAuthAccessToken,
             addonUUID: client.AddonUUID,
             addonSecretKey: client.AddonSecretKey,
-            actionUUID: client.AddonUUID
+            actionUUID: client.ActionUUID
         });
     }
 
@@ -64,7 +64,7 @@ class MyService {
     }
 
     async GetKibanaData(orderUUID: string) : Promise<any>{
-        let relativeUrl = `/addons/api/00000000-0000-0000-0000-00000da1a109/api/audit_data_logs?where=ObjectKey.keyword=${orderUUID}&order_by=CreationDateTime DESC`;
+        let relativeUrl = `/addons/api/audit_data_logs?where=ObjectKey.keyword=${orderUUID}&order_by=CreationDateTime DESC`;
         let auditLogs : Array<any> = await this.papiClient.get(relativeUrl);    
         let result: Array<any> = [];
         for (let i = 0; i < auditLogs.length; i++){
