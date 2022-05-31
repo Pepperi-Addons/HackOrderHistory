@@ -75,6 +75,7 @@ class MyService {
                 "UserEmail": user.Email,
                 "ActionType": auditLogs[i].ActionType,
                 "ObjectModificationDateTime": auditLogs[i].ObjectModificationDateTime,
+                "AuditLogCreationDateTime": auditLogs[i].CreationDateTime,
                 "UpdatedFields": auditLogs[i].UpdatedFields
             };
             result.push(log);
