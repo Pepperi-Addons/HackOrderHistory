@@ -1,6 +1,6 @@
 {
   "AddonUUID": "33139b93-6cb1-4cca-babb-21824931515d",
-  "AddonVersion": "0.0.6",
+  "AddonVersion": "0.0.7",
   "DebugPort": 4500,
   "WebappBaseUrl": "https://app.sandbox.pepperi.com",
   "DefaultEditor": "main",
@@ -22,7 +22,7 @@
     ],
     "Dependencies": {
       "Audit Log": "0.0.176",
-      "CloudWatch": "0.0.65"
+      "logs": "0.0.65"
     },
     "CPISide": []
   }
