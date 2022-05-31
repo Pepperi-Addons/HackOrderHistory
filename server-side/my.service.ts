@@ -1,9 +1,9 @@
-import { PapiClient, InstalledAddon, TransactionLines, Transaction, ATDMetaData } from '@pepperi-addons/papi-sdk'
+import { PapiClient, InstalledAddon, TransactionLines, Transaction, ATDMetaData, User, AuditLog } from '@pepperi-addons/papi-sdk'
 import { Client } from '@pepperi-addons/debug-server';
 import { OrderStatus, OperationType } from './MappingNames'
+import peach from 'parallel-each';
 
 class MyService {
-
     papiClient: PapiClient
     OrderStatus = new OrderStatus();
     OperationType = new OperationType();
@@ -14,7 +14,7 @@ class MyService {
             token: client.OAuthAccessToken,
             addonUUID: client.AddonUUID,
             addonSecretKey: client.AddonSecretKey,
-            actionUUID: client.AddonUUID
+            actionUUID: client.ActionUUID
         });
     }
 
@@ -27,13 +27,13 @@ class MyService {
         let orderData : Transaction = await this.papiClient.transactions.get(orderID);      
         let operationData : Array<any> = await this.papiClient.get('/operations?where=ReceiverID=' + orderID);      
         let orderItemsData : TransactionLines[] = await this.papiClient.transactionLines.iter({where: "Transaction.WrntyID=" + orderID}).toArray();
-        let activityTypeDfinitionData: ATDMetaData = await this.papiClient.get("/meta_data/Transactions/types/" + orderData.ActivityTypeID);
+        //let activityTypeDfinitionData: ATDMetaData = await this.papiClient.get("/meta_data/Transactions/types/" + orderData.ActivityTypeID);
 
         let result = {
             "Order": this.GetTrasactionResult(orderData),
             "OrderItems": this.GetTrasactionLineResult(orderItemsData),
             "Operation": this.GetOperationResult(operationData),
-            "ATD": this.GetATDResult(activityTypeDfinitionData)
+            //"ATD": this.GetATDResult(activityTypeDfinitionData)
         };
         return result;
     }
@@ -52,9 +52,13 @@ class MyService {
             "Status": this.OrderStatus.GetNameStatsusByID(orderStatus.toString()) ? this.OrderStatus.GetNameStatsusByID(orderStatus.toString()) : orderStatus,
             "UserEmail": user.Email,
             "ExternalID": orderData.ExternalID,
-            "Hidden": orderData.Hidden,
+            "Hidden": orderData.Hidden + '',
+            "CatalogExternalID": orderData.Catalog?.Data?.ExternalID,
             "ATDName": activityTypeDfinitionData.ExternalID,
-            "CatalogExternalID": orderData.Catalog?.Data?.ExternalID
+            "ATDHidden": activityTypeDfinitionData.Hidden + '',
+            "ATDCreationDateTime": activityTypeDfinitionData.CreationDateTime,  
+            "ATDDescription": activityTypeDfinitionData.Description,
+            "ATDModificationDateTime": activityTypeDfinitionData.ModificationDateTime,
         };
         return result;
     }
@@ -64,8 +68,11 @@ class MyService {
         let auditLogs : Array<any> = await this.papiClient.get(relativeUrl);      
         let result: Array<any> = [];
         for (let i = 0; i < auditLogs.length; i++){
+            let userUUID: any = auditLogs[i].UserUUID;
+            let user: User = await this.papiClient.users.uuid(userUUID).get();
             let log = {
                 "ActionUUID": auditLogs[i].ActionUUID,
+                "UserEmail": user.Email,
                 "ActionType": auditLogs[i].ActionType,
                 "ObjectModificationDateTime": auditLogs[i].ObjectModificationDateTime,
                 "UpdatedFields": auditLogs[i].UpdatedFields
@@ -75,10 +82,32 @@ class MyService {
         return result;
     }
 
+    async GetDeviceData(actionsUUIDs: Array<string>){
+        let result: Array<any> = [];
+        for(let i = 0; i < actionsUUIDs.length; i++){
+            let log: AuditLog = await this.papiClient.auditLogs.uuid(actionsUUIDs[i]).get();
+            if(log != null && log.AuditInfo != null && log.AuditInfo.ResultObject != null && log.AuditInfo.ResultObject != {} && log.AuditInfo.ResultObject != ""){
+                let deviceInfoString: string = log.AuditInfo.ResultObject;
+                let deviceInfo = JSON.parse(deviceInfoString);
+                if(deviceInfo != null && deviceInfo.ClientInfo != null){
+                    result.push({
+                        ActionUUID: actionsUUIDs[i],
+                        FormattedLastSyncDateTime: deviceInfo.ClientInfo['FormattedLastSyncDateTime'],
+                        DeviceExternalID: deviceInfo.ClientInfo['DeviceExternalID'],
+                        SoftwareVersion: deviceInfo.ClientInfo['SoftwareVersion'],
+                        DeviceModel: deviceInfo.ClientInfo['DeviceModel'],
+                        SystemVersion: deviceInfo.ClientInfo['SystemVersion']
+                    });          
+                }
+            }
+        }
+        return result;
+    }
+
     async GetCloudWatchData(ActionsData: Array<any>, levels: Array<string>) : Promise<any>{
+        const groups = ['OperationInvoker', 'PAPI', 'CORE', 'CPAPI'];
         let body = {
-            Groups: ['OperationInvoker', 'PAPI', 'CORE', 'CPAPI'],
-            Fields: ['ActionUUID', 'Level', 'Message', 'Exception', 'UserID', 'UserEmail', 'UserUUID'],
+            Fields: ['DateTimeStamp','ActionUUID', 'Level', 'Message', 'Exception'],
             PageSize: 1000
         }
         let levelFilter = "";
@@ -97,12 +126,15 @@ class MyService {
             
             let objectModificationDateTime = new Date(ActionsData[i].ObjectModificationDateTime);
             let startDate = new Date(objectModificationDateTime.getTime() - (1000 * (60 * 30)));
-            let endDate = new Date(objectModificationDateTime.getTime() + (1000 * (60 * 15)));
+            let endDate = new Date(objectModificationDateTime.getTime() + (1000 * (60 * 10)));
 
             body["DateTimeStamp"] = {"Start": startDate.toISOString(), "End": endDate.toISOString()};
         }
-        let cloudWatchLogs : Array<any> = await this.papiClient.post('/logs', body);        
-        return this.BuildResultFromCloudWatch(cloudWatchLogs);
+           
+        //let result = await this.BuildResultFromCloudWatch(cloudWatchLogs);
+        let cloudWatchLogs = await this.GetLogsFromCloudWatchParallel(groups, body);
+        cloudWatchLogs.sort((a,b) => (a.DateTimeStamp > b.DateTimeStamp) ? 1 : ((b.DateTimeStamp > a.DateTimeStamp) ? -1 : 0))
+        return cloudWatchLogs;
     }
 
     GetTrasactionResult(orderData: Transaction){
@@ -163,19 +195,40 @@ class MyService {
         return activityTypeDfinitionRes;
     }
 
-    BuildResultFromCloudWatch(resultFromCloudWatch: Array<any>){
+    async GetLogsFromCloudWatchParallel(groups: Array<string>, body: any){
+        const maxParallel = 5;
+        let output: Array<any> = [];
+        await peach(groups, async (group, index) => {
+            body['Groups'] = [group];
+            let cloudWatchLogs : Array<any> = await this.papiClient.post('/logs', body);
+            output.push(...cloudWatchLogs);
+        }, maxParallel)
+        return output;
+    }
+
+    /*async BuildResultFromCloudWatch(resultFromCloudWatch: Array<any>){
         let result: Array<any> = [];
         for(let i = 0; i < resultFromCloudWatch.length; i++){
             result.push(resultFromCloudWatch[i]);
-            if(result[i]['UserUUID'] != null && result[i]['UserUUID'] != ""){
+            if(result[i]['UserID'] != null){               
                 if(result[i]['UserEmail'] == null){
-                    result[i]['UserEmail'] = "nofartest";
+                    let userID: any = result[i]['UserID'];
+                    let user: User = await this.papiClient.users.get(userID);
+                    result[i]['UserEmail'] = user.Email;
+                }
+                delete result[i].UserID;
+            }
+            if(result[i]['UserUUID'] != null && result[i]['UserUUID'] != ""){            
+                if(result[i]['UserEmail'] == null){
+                    let userUUID: any = result[i]['UserUUID'];
+                    let user:User = await this.papiClient.users.uuid(userUUID).get();;
+                    result[i]['UserEmail'] = user.Email;
                 }
                 delete result[i].UserUUID;
             }
         }
         return result;
-    }
+    }*/
 }
 
 export default MyService;

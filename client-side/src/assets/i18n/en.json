@@ -1,3 +1,18 @@
 {
-    "TODO_DETAILS": "Define the todo details"
+    "TODO_DETAILS": "Define the todo details",
+    "HEADER_DETAILS": {
+        "ActionDateTime": "Action datetime",
+        "CatalogExternalID": "Catalog external id",
+        "CreationDateTime": "Creation datetime",
+        "ExternalID": "External id",
+        "ModificationDateTime": "Modification datetime",
+        "Status": "Status",
+        "Hidden": "Hidden",
+        "UserEmail": "User email",
+        "ATDName" : "ATD name",
+        "ATDHidden" : "ATD hidden",
+        "ATDCreationDateTime" : "ATD creation datetime",
+        "ATDDescription" : "ATD description",
+        "ATDModificationDateTime" : "ATD modification datetime"
+    }
 }

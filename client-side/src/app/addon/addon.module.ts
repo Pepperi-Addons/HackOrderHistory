@@ -14,11 +14,13 @@ import { PepSizeDetectorModule } from '@pepperi-addons/ngx-lib/size-detector';
 import { PepPageLayoutModule } from '@pepperi-addons/ngx-lib/page-layout';
 import { PepIconRegistry, PepIconModule, pepIconSystemClose } from '@pepperi-addons/ngx-lib/icon';
 import { PepButtonModule } from '@pepperi-addons/ngx-lib/button';
+import { PepSelectModule } from '@pepperi-addons/ngx-lib/select';
 import { PepDialogModule } from '@pepperi-addons/ngx-lib/dialog';
 import { PepMenuModule } from '@pepperi-addons/ngx-lib/menu';
 // import { PepListModule } from '@pepperi-addons/ngx-lib/list';
-// import { PepSearchModule } from '@pepperi-addons/ngx-lib/search';
+import { PepSearchModule } from '@pepperi-addons/ngx-lib/search';
 
+import { PepFormModule } from '@pepperi-addons/ngx-lib/form';
 import { PepGenericListModule } from '@pepperi-addons/ngx-composite-lib/generic-list';
 
 import { PepTextboxModule } from '@pepperi-addons/ngx-lib/textbox';
@@ -27,7 +29,6 @@ import { TranslateLoader, TranslateModule, TranslateService, TranslateStore } fr
 
 import { AddonService } from '../services/addon.service';
 import { AddonComponent } from './index';
-import { TodoForm } from './form/todo-form.component';
 
 const pepIcons = [
     pepIconSystemClose,
@@ -43,7 +44,6 @@ export const routes: Routes = [
 @NgModule({
     declarations: [
         AddonComponent,
-        TodoForm
     ],
     imports: [
         CommonModule,
@@ -59,10 +59,12 @@ export const routes: Routes = [
         PepMenuModule,
         PepPageLayoutModule,
         PepButtonModule,
+        PepSelectModule,
         PepDialogModule,
         // PepListModule,
-        // PepSearchModule,
+        PepSearchModule,
         PepTextboxModule,
+        PepFormModule,
         MatDialogModule,
         MatTabsModule,
         MatExpansionModule,

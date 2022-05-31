@@ -1,9 +1,10 @@
 <pep-page-layout [addPadding]="false">
     <ng-container pep-top-area>
-        <pep-top-bar title="Order History">
-            <div header-start-content>
+        <pep-top-bar title="Order history for">
+            <ng-container header-start-content>
                 <!-- Add components you want after the title -->
-            </div>
+                <pep-search class="search-order-number" sizeType="sm" [value]="orderNumber" (search)="onSearchChanged($event)"></pep-search>
+            </ng-container>
             <div header-end-content>
                 <!-- Add components you want at the right side -->
             </div>
@@ -12,51 +13,52 @@
 
     <ng-container pep-main-area>
         <div class="order-history-main-area">
-            <div class="order-history-main-details">
-
+            <div  *ngIf="headerDataLoaded" class="order-history-main-details">
+                <pep-form layoutType="card" [layout]="headerUiControl" [data]="headerData">
+                </pep-form>
             </div>
-            <mat-tab-group (selectedTabChange)="tabClick($event)">
+            <mat-tab-group *ngIf="tabSqlLoaded" (selectedTabChange)="tabClick($event)">
                 <mat-tab>
                     <ng-template mat-tab-label>
-                        <span class="body-md">{{ 'SQL_Title' | translate }}</span>
+                        <span class="body-md">{{ 'SQL' | translate }}</span>
                     </ng-template>
                     <div class="sql-header">
                     </div>
                     <div class="sql-content">
                         <mat-accordion [displayMode]="'flat'" [multi]="true" class="pep-accordion">
-                            <mat-expansion-panel [expanded]="true">
+                            <!-- <mat-expansion-panel [expanded]="true">
                                 <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
                                     <mat-panel-title class="ellipsis body-md">
-                                        {{ 'ATD_Title' | translate }}
+                                        {{ 'ATD' | translate }}
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
                                
                                 <pep-generic-list [dataSource]="atdListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
-                            </mat-expansion-panel>
-                            <mat-expansion-panel>
+                            </mat-expansion-panel> -->
+                            <!-- <mat-expansion-panel>
                                 <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
                                     <mat-panel-title class="ellipsis body-md">
-                                        {{ 'Order_Title' | translate }}
+                                        {{ 'Order' | translate }}
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
                                 <div class="expansion-content order-content">
                                     <pep-generic-list [dataSource]="orderListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                                 </div>
-                            </mat-expansion-panel>
-                            <mat-expansion-panel>
+                            </mat-expansion-panel> -->
+                            <mat-expansion-panel [expanded]="true">
                                 <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
                                     <mat-panel-title class="ellipsis body-md">
-                                        {{ 'Order_Items_Title' | translate }}
+                                        Order Items
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
                                 <div class="expansion-content order-items-content">
                                     <pep-generic-list [dataSource]="orderItemsListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                                 </div>
                             </mat-expansion-panel>
-                            <mat-expansion-panel>
+                            <mat-expansion-panel [expanded]="true">
                                 <mat-expansion-panel-header [collapsedHeight]="expansionPanelHeaderHeight" [expandedHeight]="expansionPanelHeaderHeight">
                                     <mat-panel-title class="ellipsis body-md">
-                                        {{ 'Operations_Title' | translate }}
+                                        Operations
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
                                 <div class="expansion-content operations-content">
@@ -67,52 +69,79 @@
                     </div>
                 </mat-tab>
 
-                <mat-tab>
+                <mat-tab [disabled]="!tabKibanaLoaded">
                     <ng-template mat-tab-label>
                         <span class="body-md">
-                            {{ 'Kibana_Title' | translate }}
+                            {{ 'Kibana' | translate }}
                         </span>
                     </ng-template>
-                    <div class="kibana-header">
+                    <!-- <div class="kibana-header">
                         <div class="kibana-sub-title">
                             <p class="body-md" [innerHTML]="'Kibana_SubTitle' | translate"></p>
                         </div>
-                    </div>
-                    <div class="kibana-content">
+                    </div> -->
+                    <div *ngIf="tabKibanaLoaded && currentTabIndex === 1" class="kibana-content">
                         <div class="kibana-component">
-                            <pep-generic-list [dataSource]="kibanaListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
+                            <pep-generic-list style="height: 100%;" [dataSource]="kibanaListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                         </div>
                     </div>
                 </mat-tab>
 
-                <mat-tab>
+                <mat-tab [disabled]="!tabKibanaLoaded">
                     <ng-template mat-tab-label>
                         <span class="body-md">
-                            {{ 'Cloud_Title' | translate }}
+                            {{ 'Cloud' | translate }}
                         </span>
                     </ng-template>
-                    <div class="cloud-header">
-                        <div class="cloud-sub-title">
-                            <p class="body-md" [innerHTML]="'Cloud_SubTitle' | translate"></p>
+                    <div class="cloud-container">
+                        <div *ngIf="tabKibanaLoaded && currentTabIndex === 2" class="cloud-header">
+                            <pep-select mandatory="true" label="Actions uuids" type="multi" [value]="actionsUuidsCloudValue"
+                                [options]="actionsUuidsOptions"
+                                (valueChange)="onActionsUuidsCloudChanged($event)">
+                            </pep-select>
+                            <pep-select label="Levels" type="multi" [value]="levelsValue"
+                                [options]="levelsOptions"
+                                (valueChange)="onLevelsValueChanged($event)">
+                            </pep-select>
+                            <pep-button value="load data" styleType="strong" [disabled]="actionsUuidsCloudValue.length === 0" (buttonClick)="onLoadCloudDataClicked($event)"></pep-button>
+                            <!-- <pep-button *ngIf="hasErrorInCloud" value="fix all problems (AI)" styleType="strong" styleStateType="caution" (buttonClick)="openFixDialog($event)"></pep-button> -->
                         </div>
-                    </div>
-                    <div class="cloud-content">
-                        <div class="cloud-component">
+                        <div *ngIf="tabCloudLoaded" class="cloud-content">
                             <pep-generic-list [dataSource]="cloudListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
                         </div>
                     </div>
                 </mat-tab>
 
+                <mat-tab [disabled]="!tabKibanaLoaded">
+                    <ng-template mat-tab-label>
+                        <span class="body-md">
+                            {{ 'DeviceDetails' | translate }}
+                        </span>
+                    </ng-template>
+                    <div class="device-details-container">
+                        <div *ngIf="tabKibanaLoaded && currentTabIndex === 3" class="device-details-header">
+                            <pep-select mandatory="true" label="Actions uuids" type="multi" [value]="actionsUuidsDeviceDetailsValue"
+                                [options]="actionsUuidsOptions"
+                                (valueChange)="onActionsUuidsDeviceDetailsChanged($event)">
+                            </pep-select>
+                            <pep-button value="load data" styleType="strong" [disabled]="actionsUuidsDeviceDetailsValue.length === 0" (buttonClick)="onLoadDeviceDetailsDataClicked($event)"></pep-button>
+                        </div>
+                        <div *ngIf="tabDeviceDetailsLoaded" class="device-details-content">
+                            <pep-generic-list [dataSource]="deviceDetailsListDataSource" [selectionType]="'none'" [inline]="true"></pep-generic-list>
+                        </div>
+                    </div>
+                </mat-tab>
+
                 <mat-tab>
                     <ng-template mat-tab-label>
                         <span class="body-md">
-                            {{ 'IPass_Title' | translate }}
+                            {{ 'IPass' | translate }}
                         </span>
                     </ng-template>
                     <div class="ipass-header">
-                        <div class="ipass-sub-title">
+                        <!-- <div class="ipass-sub-title">
                             <p class="body-md" [innerHTML]="'IPass_SubTitle' | translate"></p>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="ipass-content">
                         TODO:
@@ -122,29 +151,13 @@
                 <mat-tab>
                     <ng-template mat-tab-label>
                         <span class="body-md">
-                            {{ 'DeviceDetails_Title' | translate }}
-                        </span>
-                    </ng-template>
-                    <div class="device-details-header">
-                        <div class="device-details-sub-title">
-                            <p class="body-md" [innerHTML]="'DeviceDetails_SubTitle' | translate"></p>
-                        </div>
-                    </div>
-                    <div class="device-details-content">
-                        TODO:
-                    </div>
-                </mat-tab>
-
-                <mat-tab>
-                    <ng-template mat-tab-label>
-                        <span class="body-md">
-                            {{ 'JsonPut_Title' | translate }}
+                            {{ 'JsonPut' | translate }}
                         </span>
                     </ng-template>
                     <div class="json-put-header">
-                        <div class="json-put-sub-title">
+                        <!-- <div class="json-put-sub-title">
                             <p class="body-md" [innerHTML]="'JsonPut_SubTitle' | translate"></p>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="json-put-content">
                         TODO:

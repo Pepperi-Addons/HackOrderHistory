@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Component } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AddonComponent } from './addon/addon.component';
-import { TodoForm } from './addon/form/todo-form.component';
 
 // Important for single spa
 @Component({
@@ -18,10 +17,6 @@ const routes: Routes = [
             {
                 path: 'OrderHistory',
                 component: AddonComponent,
-            },
-            {
-                path: 'OrderHistory/:todo_uuid',
-                component: TodoForm
             }
         ]
     },

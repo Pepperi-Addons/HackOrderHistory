@@ -20,6 +20,14 @@ export async function get_kibana_data(client: Client, request: Request){
     return res;
 }
 
+export async function get_device_data(client: Client, request: Request){
+    const service = new MyService(client);
+    let actionsUUIDsString: string = request.query["actions_uuids"].toLowerCase();
+    let actionsUUIDs: Array<string> = actionsUUIDsString.split(';');
+    const res = await service.GetDeviceData(actionsUUIDs);
+    return res;
+}
+
 export async function get_could_watch_data(client: Client, request: Request){
     const service = new MyService(client);
     const res = await service.GetCloudWatchData(request.body["ActionsData"], request.body["Levels"]);

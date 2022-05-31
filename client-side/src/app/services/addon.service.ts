@@ -3,50 +3,69 @@ import jwt from 'jwt-decode';
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { Injectable } from '@angular/core';
 
-import { PepHttpService, PepSessionService } from '@pepperi-addons/ngx-lib';
+import { PepAddonService, PepHttpService, PepSessionService } from '@pepperi-addons/ngx-lib';
+import { config } from '../app.config';
 
 
 @Injectable({ providedIn: 'root' })
 export class AddonService {
-
+    addonURL = '';
     accessToken = '';
     parsedToken: any
     papiBaseURL = ''
     addonUUID;
-
+    serverBaseURL = ''
+    
     get papiClient(): PapiClient {
         return new PapiClient({
             baseURL: this.papiBaseURL,
-            token: this.session.getIdpToken(),
+            token: this.sessionService.getIdpToken(),
             addonUUID: this.addonUUID,
             suppressLogging:true
         })
     }
 
     constructor(
-        public session:  PepSessionService,
-        private pepHttp: PepHttpService
+        private sessionService:  PepSessionService,
+        private httpService: PepHttpService,
+        private addonService: PepAddonService
     ) {
-        const accessToken = this.session.getIdpToken();
-        this.parsedToken = jwt(accessToken);
+        this.addonUUID = config.AddonUUID;
+        this.addonURL = `/addons/files/${this.addonUUID}`;
+        this.accessToken = this.sessionService.getIdpToken();
+        this.parsedToken = jwt(this.accessToken);
         this.papiBaseURL = this.parsedToken["pepperi.baseurl"];
+        this.serverBaseURL = this.addonService.getServerBaseUrl(this.addonUUID, 'api');
     }
 
-    async get(endpoint: string): Promise<any> {
-        return await this.papiClient.get(endpoint);
+    // Get the header data.
+    getHeaderData(orderNumber: string): Observable<any> {
+        return this.httpService.getHttpCall(`${this.serverBaseURL}/get_header_data_from_sql?order_id=${orderNumber}`);
     }
 
-    async post(endpoint: string, body: any): Promise<any> {
-        return await this.papiClient.post(endpoint, body);
+    // Get the sql data.
+    getSqlData(orderNumber: string): Observable<any> {
+        return this.httpService.getHttpCall(`${this.serverBaseURL}/get_sql_data?order_id=${orderNumber}`);
     }
 
-    pepGet(endpoint: string): Observable<any> {
-        return this.pepHttp.getPapiApiCall(endpoint);
+    // Get the kibana data.
+    getKibanaData(orderUUID: string): Observable<any> {
+        return this.httpService.getHttpCall(`${this.serverBaseURL}/get_kibana_data?order_uuid=${orderUUID}`);
     }
 
-    pepPost(endpoint: string, body: any): Observable<any> {
-        return this.pepHttp.postPapiApiCall(endpoint, body);
+    // Get the cloud data.
+    getCloudData(actionsData: any[], levels: string[]): Observable<any> {
+        const body = {
+            ActionsData: actionsData,
+            Levels: levels,
+        };
 
+        return this.httpService.postHttpCall(`${this.serverBaseURL}/get_could_watch_data`, body);
     }
 
+    // Get the divice details data.
+    getDeviceDetailsData(actionsData: string): Observable<any> {
+        return this.httpService.getHttpCall(`${this.serverBaseURL}/get_device_data?actions_uuids=${actionsData}`);
+    }
+    
 }
