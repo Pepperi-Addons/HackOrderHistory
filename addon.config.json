@@ -1,6 +1,6 @@
 {
   "AddonUUID": "33139b93-6cb1-4cca-babb-21824931515d",
-  "AddonVersion": "0.0.10",
+  "AddonVersion": "0.0.12",
   "DebugPort": 4500,
   "WebappBaseUrl": "https://app.sandbox.pepperi.com",
   "DefaultEditor": "main",
@@ -15,9 +15,9 @@
     "ClientStack": "ng10",
     "Editors": [
       {
-        "ParentPackageName": "Hackaton",
-        "PackageName": "OrderHistory",
-        "Description": "Order history :)"
+        "ParentPackageName": "System Monitor",
+        "PackageName": "resource_tracer",
+        "Description": "Resource tracer"
       }
     ],
     "Dependencies": {

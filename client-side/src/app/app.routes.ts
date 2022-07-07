@@ -15,7 +15,7 @@ const routes: Routes = [
         path: `settings/:addon_uuid`,
         children: [
             {
-                path: 'OrderHistory',
+                path: 'resource_tracer',
                 component: AddonComponent,
             }
         ]
